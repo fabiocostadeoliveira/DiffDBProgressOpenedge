@@ -1,0 +1,1 @@
+(?P<ADDTABLE>add\s*table\s*\".*\")|(?P<AREA>area\s*\".*\")|(?P<LABEL>label\s*\".*\")|(?P<DESCRIPTION>description\s*\".*\")|(?P<DUMPNAME>dump-name\s*\".*\")|(?P<TABLETRIGGER>TABLE-TRIGGER\s*\".*\"\sOVERRIDE\sPROCEDURE\s*\".*\"\scrc\s\".*\")
