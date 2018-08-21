@@ -1,0 +1,5 @@
+ADD TABLE "acr001"
+  LABEL "Cadastro de Distribuicoes"
+  DESCRIPTION "Cadastro de Distribuicoes desc"
+  DUMP-NAME "acr001"
+  AREA "Josimesio"
