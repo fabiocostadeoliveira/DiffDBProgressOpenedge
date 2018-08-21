@@ -3,6 +3,7 @@ from table import Table
 class Field:
 
     table: Table
+    name: str
     formatt: str
     initial:str
     label: str
@@ -13,16 +14,22 @@ class Field:
     valMsg: str
     help: str
     order: str
+    decimals: str
 
     def __init__(self):
         self.table = Table()
-        self.formatt = None
-        self.initial = None
-        self.label = None
-        self.position = None
-        self.maxWidth = None
-        self.column_label = None
-        self.valExp = None
-        self.valMsg = None
-        self.help = None
-        self.order = None
+        self.name = ""
+        self.formatt = ""
+        self.initial = ""
+        self.label = ""
+        self.position = ""
+        self.maxWidth = ""
+        self.columnLabel = ""
+        self.valExp = ""
+        self.valMsg = ""
+        self.help = ""
+        self.order = ""
+        self.decimals = ""
+
+    def __str__(self):
+        return self.name + " - " + self.label + " - " + self.formatt

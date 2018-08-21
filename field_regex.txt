@@ -1,0 +1,1 @@
+(?P<ADDFIELD>add\s*field\s*.*)|(?P<FORMAT>format\s*\".*\")|(?P<LABEL>label\s*\".*\")|(?P<DESCRIPTION>description\s*\".*\")|(?P<INITIAL>initial\s*\".*\")|(?P<POSITION>position\s*.*)|(?P<COLUMNLABEL>column-label\s*\".*\")|(?P<HELP>help\s*\".*\")|(?P<DECIMALS>decimals\s*.*)|(?P<ORDER>order\s*.*)
