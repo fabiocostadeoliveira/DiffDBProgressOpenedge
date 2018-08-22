@@ -1,5 +1,20 @@
-ADD TABLE "acr001"
-  LABEL "Cadastro de Distribuicoes"
-  DESCRIPTION "Cadastro de Distribuicoes desc"
-  DUMP-NAME "acr001"
-  AREA "Josimesio"
+ADD INDEX "rpa002-1" ON "rpa002" 
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "empresa" ASCENDING 
+  INDEX-FIELD "unidade" ASCENDING 
+  INDEX-FIELD "ano" ASCENDING 
+  INDEX-FIELD "cgc-cpf-freteiro" ASCENDING 
+  INDEX-FIELD "cod-pre-rpa" ASCENDING 
+
+ADD INDEX "rpa002-2" ON "rpa002" 
+  INDEX-FIELD "empresa" ASCENDING 
+  INDEX-FIELD "unidade" ASCENDING 
+  INDEX-FIELD "cgc-cpf-freteiro" ASCENDING 
+  INDEX-FIELD "data-mvto" ASCENDING 
+
+ADD INDEX "rpa002-3" ON "rpa002" 
+  INDEX-FIELD "empresa" ASCENDING 
+  INDEX-FIELD "ano" ASCENDING 
+  INDEX-FIELD "mes" ASCENDING 
+  INDEX-FIELD "cgc-cpf-freteiro" ASCENDING 

@@ -1,0 +1,1 @@
+(?P<ADDSEQUENCE>add\s*sequence\s*\".*\")|(?P<INITIAL>initial\s.*)|(?P<INCREMENT>increment\s*.*)|(?P<CYCLEONLIMIT>CYCLE-ON-LIMIT\s*.*)|(?P<MINVAL>MIN-VAL\s*.*)|(?P<MAXVAL>MAX-VAL\s*.*)

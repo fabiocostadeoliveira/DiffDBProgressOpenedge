@@ -1,0 +1,1 @@
+(?P<ADDINDEX>add\s*INDEX\s*\".*\"\s*on\s*\".*?\")|(?P<AREA>area\s*\".*?\")|(?P<UNIQUE>unique?)|(?P<PRIMARY>PRIMARY?)|(?P<INDEXFIELD>index-field\s*\".*\"\s*(?P<ORDENACAO>ASCENDING|DESCENDING)\s*(?P<ABBREVIATED>ABBREVIATED|))
