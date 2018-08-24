@@ -8,6 +8,12 @@ from sequence import Sequence
 import abc
 import re
 
+class Dict:
+    tables = {}
+    fields = []
+    indexes = {}
+    sequences = {}
+
 class RegexUtil:
     REGEX_TABLE = open('./table_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_FIELD = open('./field_regex.txt', encoding='utf-8', mode='r').read()
@@ -40,9 +46,8 @@ class ModeloTable(ModeloComando):
                 table.label = compileDados.findall(match.groupdict()['LABEL'])[0]
             elif match.lastgroup == 'ADDTABLE':
                 table.name = compileDados.findall(match.groupdict()['ADDTABLE'])[0]
-        '''
-        print(table)
-        '''
+        return table
+
 class ModeloField(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -74,9 +79,8 @@ class ModeloField(ModeloComando):
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
             elif match.lastgroup == 'ADDFIELD':
                 field.name = compileDados.findall(match.groupdict()['ADDFIELD'])[0]
-        '''
-        print(field)
-        '''
+        return field
+
 class ModeloIndex(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -96,7 +100,7 @@ class ModeloIndex(ModeloComando):
             elif match.lastgroup == 'INDEXFIELD':
                 index.indexField = compileDados.findall(match.groupdict()['INDEXFIELD'])[0]
 
-        print(index)
+        return index
 
 class ModeloSequece(ModeloComando):
     def converter(self, comandoStr):
@@ -124,7 +128,7 @@ class ModeloSequece(ModeloComando):
                 if len(compileDados.findall(match.groupdict()['MAXVAL'])) > 0:
                     sequence.maxVal = compileDados.findall(match.groupdict()['MAXVAL'])[0]
 
-        print(sequence)
+        return sequence
 
 def isTable(comando):
     return (comando.strip()[:9] == "ADD TABLE")
@@ -146,14 +150,33 @@ def getModeloConversao(comando):
     elif (isSequence(comando)):
         return  ModeloSequece()
 
+'''
+Inicio Execução
+'''
+
+
 f = open('./df.df', 'r')
 
 texto = f.read()
 
 comando = None
 
+dict = Dict();
 for cmd in texto.split("ADD"):
     if(len(cmd.replace("\n", "").strip()) > 0):
         comando = "ADD" + cmd
         modeloComando = getModeloConversao(comando)
-        modeloComando.converter(comando)
+        comando = modeloComando.converter(comando)
+        if type(comando) is Table:
+            tabela: Table
+            tabela = comando
+            dict.tables[tabela.name] = tabela
+        elif type(comando) is Field:
+            field: Field
+            field = comando
+            dict.fields.append(field)
+
+for field in dict.fields:
+    field.table =None #Aqui pegar o nome da tabela no campo
+
+print(dict.tables['est017'].description)
