@@ -1,5 +1,5 @@
 #from builtins import print
-import sequence
+
 from table import Table
 from field import Field
 from index import Index
@@ -9,19 +9,26 @@ import abc
 import re
 
 class Dict:
-    tables = {}
-    fields = []
-    indexes = {}
-    sequences = {}
+    fields:list
+    indexes:list
+    sequences:list
+
+    def __init__(self):
+        self.tables = {}
+        self.fields = []
+        self.indexes = []
+        self.sequences = []
 
 class RegexUtil:
     REGEX_TABLE = open('./table_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_FIELD = open('./field_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_INDEX = open('./index_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_SEQUE = open('./seque_regex.txt', encoding='utf-8', mode='r').read()
-
-    REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
     REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9])"
+    REGEX_PROP_SEM_ASPAS = r".*\s(?P<CONTEUDO>\w.*)"
+    REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
+    REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
+
 
 class ModeloComando(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -78,7 +85,22 @@ class ModeloField(ModeloComando):
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
             elif match.lastgroup == 'ADDFIELD':
-                field.name = compileDados.findall(match.groupdict()['ADDFIELD'])[0]
+                matchesField = re.finditer(RegexUtil.REGEX_ADD_FIELD, match.groupdict()['ADDFIELD'], re.MULTILINE | re.IGNORECASE)
+                for matchNum1, matchField in enumerate(matchesField):
+                    print(match.groupdict()['ADDFIELD'])
+                    compileString = re.compile(RegexUtil.REGEX_PROP_STRING)
+                    compileSemAspas = re.compile(RegexUtil.REGEX_PROP_SEM_ASPAS)
+                    field.nameTable = compileString.findall(matchField.group('TABELA'))[0]
+                    field.typeField = compileSemAspas.findall(matchField.group('TIPO'))[0]
+                    field.name = compileString.findall(matchField.group('CAMPO'))[0]
+                    dump.tables[field.nameTable].addField(field)
+                    '''
+                    if matchField.lastgroup == 'TIPO':
+                        compile = re.compile(RegexUtil.REGEX_PROP_STRING)
+                        print(matchField.groupdict())
+                        print(compile.findall(matchField.groupdict()['TABELA']))
+                    '''
+
         return field
 
 class ModeloIndex(ModeloComando):
@@ -155,13 +177,13 @@ Inicio Execução
 '''
 
 
-f = open('./df.df', 'r')
+f = open('./df1.df', 'r')
 
 texto = f.read()
 
 comando = None
 
-dict = Dict();
+dump = Dict();
 for cmd in texto.split("ADD"):
     if(len(cmd.replace("\n", "").strip()) > 0):
         comando = "ADD" + cmd
@@ -170,13 +192,32 @@ for cmd in texto.split("ADD"):
         if type(comando) is Table:
             tabela: Table
             tabela = comando
-            dict.tables[tabela.name] = tabela
+            dump.tables[tabela.name] = tabela
         elif type(comando) is Field:
             field: Field
             field = comando
-            dict.fields.append(field)
+            dump.fields.append(field)
+        elif type(comando) is Index:
+            index: Index
+            index = comando
+            dump.indexes.append(index)
+        elif type(comando) is Sequence:
+            sequence: Sequence
+            sequence = comando
+            dump.sequences.append(sequence)
 
-for field in dict.fields:
-    field.table =None #Aqui pegar o nome da tabela no campo
+field = dump.tables['acr001'].fields[0]
+print(field.name + " - " + field.typeField + " - " + field.nameTable)
 
-print(dict.tables['est017'].description)
+## Faz vinculo entre os fields e as tables
+'''
+for field in dump.fields:
+    field.table = None #Aqui pegar o nome da tabela no campo
+    table: Table
+    table = dump.tables[field.nameTable]
+    table.addField(field)
+
+
+
+print(dump.tables['est017'].description)
+'''

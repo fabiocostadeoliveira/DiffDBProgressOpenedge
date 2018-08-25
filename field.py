@@ -1,9 +1,11 @@
-from table import Table
+
 
 class Field:
 
-    table: Table
+
     name: str
+    nameTable: str
+    typeField: str
     formatt: str
     initial:str
     label: str
@@ -17,7 +19,7 @@ class Field:
     decimals: str
 
     def __init__(self):
-        self.table = Table()
+#        self.table = tb()
         self.name = ""
         self.formatt = ""
         self.initial = ""
@@ -30,6 +32,7 @@ class Field:
         self.help = ""
         self.order = ""
         self.decimals = ""
+        self.nameTable = ""
 
     def __str__(self):
         return self.name + " - " + self.label + " - " + self.formatt

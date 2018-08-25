@@ -1,3 +1,4 @@
+import field as Field
 class Table:
 
     name: str
@@ -18,6 +19,9 @@ class Table:
         self.table_trigger = list()
         self.fields        = list()
         self.indexes       = list()
+
+    def addField(self,field:Field):
+        self.fields.append(field)
 
     def __str__(self):
         return self.name + " - " + self.dump_name + " - " + self.label + " - " + self.area + " - " + self.description
