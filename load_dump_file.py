@@ -93,7 +93,7 @@ class ModeloField(ModeloComando):
                     field.nameTable = compileString.findall(matchField.group('TABELA'))[0]
                     field.typeField = compileSemAspas.findall(matchField.group('TIPO'))[0]
                     field.name = compileString.findall(matchField.group('CAMPO'))[0]
-                    dump.tables[field.nameTable].addField(field)
+
                     '''
                     if matchField.lastgroup == 'TIPO':
                         compile = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -176,38 +176,35 @@ def getModeloConversao(comando):
 Inicio Execução
 '''
 
+def ler_df(arquivo):
+    f = open(arquivo, 'r')
+    texto = f.read()
+    comando = None
 
-f = open('./df1.df', 'r')
-
-texto = f.read()
-
-comando = None
-
-dump = Dict();
-for cmd in texto.split("ADD"):
-    if(len(cmd.replace("\n", "").strip()) > 0):
-        comando = "ADD" + cmd
-        modeloComando = getModeloConversao(comando)
-        comando = modeloComando.converter(comando)
-        if type(comando) is Table:
-            tabela: Table
-            tabela = comando
-            dump.tables[tabela.name] = tabela
-        elif type(comando) is Field:
-            field: Field
-            field = comando
-            dump.fields.append(field)
-        elif type(comando) is Index:
-            index: Index
-            index = comando
-            dump.indexes.append(index)
-        elif type(comando) is Sequence:
-            sequence: Sequence
-            sequence = comando
-            dump.sequences.append(sequence)
-
-field = dump.tables['acr001'].fields[0]
-print(field.name + " - " + field.typeField + " - " + field.nameTable)
+    dump = Dict()
+    for cmd in texto.split("ADD"):
+        if(len(cmd.replace("\n", "").strip()) > 0):
+            comando = "ADD" + cmd
+            modeloComando = getModeloConversao(comando)
+            comando = modeloComando.converter(comando)
+            if type(comando) is Table:
+                tabela: Table
+                tabela = comando
+                dump.tables[tabela.name] = tabela
+            elif type(comando) is Field:
+                field: Field
+                field = comando
+                dump.tables[field.nameTable].addField(field)
+                dump.fields.append(field)
+            elif type(comando) is Index:
+                index: Index
+                index = comando
+                dump.indexes.append(index)
+            elif type(comando) is Sequence:
+                sequence: Sequence
+                sequence = comando
+                dump.sequences.append(sequence)
+    return dump
 
 ## Faz vinculo entre os fields e as tables
 '''
