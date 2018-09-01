@@ -87,19 +87,11 @@ class ModeloField(ModeloComando):
             elif match.lastgroup == 'ADDFIELD':
                 matchesField = re.finditer(RegexUtil.REGEX_ADD_FIELD, match.groupdict()['ADDFIELD'], re.MULTILINE | re.IGNORECASE)
                 for matchNum1, matchField in enumerate(matchesField):
-                    print(match.groupdict()['ADDFIELD'])
                     compileString = re.compile(RegexUtil.REGEX_PROP_STRING)
                     compileSemAspas = re.compile(RegexUtil.REGEX_PROP_SEM_ASPAS)
                     field.nameTable = compileString.findall(matchField.group('TABELA'))[0]
                     field.typeField = compileSemAspas.findall(matchField.group('TIPO'))[0]
                     field.name = compileString.findall(matchField.group('CAMPO'))[0]
-
-                    '''
-                    if matchField.lastgroup == 'TIPO':
-                        compile = re.compile(RegexUtil.REGEX_PROP_STRING)
-                        print(matchField.groupdict())
-                        print(compile.findall(matchField.groupdict()['TABELA']))
-                    '''
 
         return field
 
@@ -206,15 +198,3 @@ def ler_df(arquivo):
                 dump.sequences.append(sequence)
     return dump
 
-## Faz vinculo entre os fields e as tables
-'''
-for field in dump.fields:
-    field.table = None #Aqui pegar o nome da tabela no campo
-    table: Table
-    table = dump.tables[field.nameTable]
-    table.addField(field)
-
-
-
-print(dump.tables['est017'].description)
-'''
