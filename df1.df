@@ -3,13 +3,35 @@ ADD TABLE "acr001"
   DESCRIPTION "Cadastro de Distribuicoes"
   DUMP-NAME "acr001"
 
-ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal 
+ADD TABLE "acr002"
+  LABEL "Cadastro de josimesio"
+  DESCRIPTION "Cadastro de Distribuicoes josimesios"
+  DUMP-NAME "acr002"
+
+ADD TABLE "acr003"
+  LABEL "Josino"
+  DESCRIPTION "Josino"
+  DUMP-NAME "acr003"
+
+ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
   DESCRIPTION "Codigo da Distribuicao"
   FORMAT "zzzz9"
   INITIAL "0"
-  LABEL "Cod.Distribuicao"
-  POSITION 2
+  LABEL "Cod.Distribuicao...."
+  POSITION 290
   COLUMN-LABEL "Cod!Distribuicao"
-  HELP "Codigo da Distribuicao"
-  DECIMALS 0
-  ORDER 10
+  HELP "Codigo da Distribuicao "
+  DECIMALS 83
+  ORDER 432
+
+
+ADD FIELD "codigoDistribuicao" OF "acr003" AS character
+  DESCRIPTION "teste de field"
+  FORMAT "x(10)"
+  INITIAL "0"
+  LABEL "Cod. do josi"
+  POSITION 290
+  COLUMN-LABEL "Cod!josi"
+  HELP "va pa merda "
+  DECIMALS 10
+  ORDER 4

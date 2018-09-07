@@ -19,6 +19,8 @@ class Index:
     def __str__(self):
         return self.name + " - " + self.area + " - " + self.indexField + " - " +  str(self.unique) + " - " + str(self.primary)
 
+
+
 '''
 ADD INDEX "acr003-4" ON "acr003" 
   UNIQUE

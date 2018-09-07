@@ -24,7 +24,7 @@ class RegexUtil:
     REGEX_FIELD = open('./field_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_INDEX = open('./index_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_SEQUE = open('./seque_regex.txt', encoding='utf-8', mode='r').read()
-    REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9])"
+    REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9]*)"
     REGEX_PROP_SEM_ASPAS = r".*\s(?P<CONTEUDO>\w.*)"
     REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
     REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
@@ -81,6 +81,7 @@ class ModeloField(ModeloComando):
             elif match.lastgroup == 'DECIMALS':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.decimals = compile.findall(match.groupdict()['DECIMALS'])[0]
+                print()
             elif match.lastgroup == 'ORDER':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
