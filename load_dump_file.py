@@ -28,6 +28,7 @@ class RegexUtil:
     REGEX_PROP_SEM_ASPAS = r".*\s(?P<CONTEUDO>\w.*)"
     REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
     REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
+    REGEX_ADD_INDEX = r"(?P<ADDINDEX>add\s*index\s*)(?P<INDICE>\".*?\")(?P<TABELA>\sON\s*\".*\")"
 
 
 class ModeloComando(metaclass=abc.ABCMeta):
@@ -81,7 +82,6 @@ class ModeloField(ModeloComando):
             elif match.lastgroup == 'DECIMALS':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.decimals = compile.findall(match.groupdict()['DECIMALS'])[0]
-                print()
             elif match.lastgroup == 'ORDER':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
@@ -105,7 +105,13 @@ class ModeloIndex(ModeloComando):
 
         for matchNum, match in enumerate(matches):
             if match.lastgroup == 'ADDINDEX':
-               index.name = compileDados.findall(match.groupdict()['ADDINDEX'])[0]
+               #index.name = compileDados.findall(match.groupdict()['ADDINDEX'])[0]
+               matchesIndex = re.finditer(RegexUtil.REGEX_ADD_INDEX, match.groupdict()['ADDINDEX'], re.MULTILINE | re.IGNORECASE)
+               for matchNum1, matchIndex in enumerate(matchesIndex):
+                   compileString = re.compile(RegexUtil.REGEX_PROP_STRING)
+                   index.name = matchIndex.group('INDICE').replace("\"","")
+                   index.nameTable = compileString.findall(matchIndex.group('TABELA'))[0]
+
             elif match.lastgroup == 'AREA':
                 index.area = compileDados.findall(match.groupdict()['AREA'])[0]
             elif match.lastgroup == 'UNIQUE':
@@ -193,6 +199,7 @@ def ler_df(arquivo):
             elif type(comando) is Index:
                 index: Index
                 index = comando
+                dump.tables[index.nameTable].addIndex(index)
                 dump.indexes.append(index)
             elif type(comando) is Sequence:
                 sequence: Sequence

@@ -1,5 +1,7 @@
 import field as Field
+import index as Index
 from sintaxe import sintaxe
+
 class Table:
 
     name: str
@@ -9,7 +11,7 @@ class Table:
     dump_name: str
     tableTrigger: list
     fields: dict
-    indexes: list
+    indexes: dict
 
     def __init__(self):
         self.name          = str()
@@ -19,11 +21,13 @@ class Table:
         self.dump_name     = str()
         self.table_trigger = list()
         self.fields        = dict()
-        self.indexes       = list()
+        self.indexes       = dict()
 
     def addField(self,field:Field):
         #self.fields.append(field)
         self.fields.update({field.name:field})
+    def addIndex(self,index:Index):
+        self.indexes.update({index.name:index})
 
     def __str__(self):
         properties = ""

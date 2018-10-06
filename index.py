@@ -1,7 +1,5 @@
-from table import Table
-
 class Index:
-    table: Table
+    nameTable: str
     name: str
     area: str
     unique: bool
@@ -9,7 +7,7 @@ class Index:
     indexField: list()
 
     def __init__(self):
-        self.table = Table()
+        self.nameTable = ""
         self.name = ""
         self.area = ""
         self.unique = False

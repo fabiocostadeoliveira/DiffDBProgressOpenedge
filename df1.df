@@ -24,6 +24,11 @@ ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
   DECIMALS 83
   ORDER 432
 
+ADD INDEX "aac001-1" ON "acr001"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
 
 ADD FIELD "codigoDistribuicao" OF "acr003" AS character
   DESCRIPTION "teste de field"

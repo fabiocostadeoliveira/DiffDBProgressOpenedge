@@ -33,6 +33,9 @@ def compareField(field1, field2)->str:
     dif: bool = False
     comando = sintaxe.UPDATE_FIELD + '\n'
 
+    if (field2 == None):
+        return str(field1)
+
     if (field1.description != field2.description):
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=field1.description)
@@ -71,15 +74,19 @@ dump2 = ler_df("./df2.df")
 for table in dump1.tables:
     t = dump1.tables.get(table,None)
     t2 = dump2.tables.get(table,None)
-    atrib = t.__dict__
 
     print(compareTable(t, t2))
 
+
     for field in t.fields:
+        f1 = t.fields.get(field, None)
         if(t2 == None):
             f2 = None
         else:
             f2 =  t2.fields.get(field,None)
-            f1 =  t.fields.get(field,None)
 
         print(compareField(f1,f2))
+
+    for index in t.indexes:
+        print("Tabela: ", t.name)
+        print("Indice: ", t.name, t.indexes.get(index,None))
