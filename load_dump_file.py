@@ -2,7 +2,7 @@
 
 from table import Table
 from field import Field
-from index import Index
+from index import Index, IndexField
 from sequence import Sequence
 
 import abc
@@ -29,12 +29,13 @@ class RegexUtil:
     REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
     REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
     REGEX_ADD_INDEX = r"(?P<ADDINDEX>add\s*index\s*)(?P<INDICE>\".*?\")(?P<TABELA>\sON\s*\".*\")"
-
+    REGEX_INDEX_FIELD = r"(?P<INDEXFIELD>index-field\s*\".*\"\s*(?P<ORDENACAO>ASCENDING|DESCENDING)\s*(?P<ABBREVIATED>ABBREVIATED|))"
 
 class ModeloComando(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def converter(self, comandoStr):
         return
+
 
 class ModeloTable(ModeloComando):
     def converter(self, comandoStr):
@@ -55,6 +56,7 @@ class ModeloTable(ModeloComando):
             elif match.lastgroup == 'ADDTABLE':
                 table.name = compileDados.findall(match.groupdict()['ADDTABLE'])[0]
         return table
+
 
 class ModeloField(ModeloComando):
     def converter(self, comandoStr):
@@ -96,6 +98,7 @@ class ModeloField(ModeloComando):
 
         return field
 
+
 class ModeloIndex(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -119,9 +122,21 @@ class ModeloIndex(ModeloComando):
             elif match.lastgroup == 'PRIMARY':
                 index.primary = True
             elif match.lastgroup == 'INDEXFIELD':
-                index.indexField = compileDados.findall(match.groupdict()['INDEXFIELD'])[0]
+                matchesIndex = re.finditer(RegexUtil.REGEX_INDEX_FIELD, match.groupdict()['INDEXFIELD'],re.MULTILINE | re.IGNORECASE)
+                i = 0
+                for matchNum1, matchIndex in enumerate(matchesIndex):
+                    indexF = IndexField()
+                    indexF.fieldName = compileString.findall(matchIndex.group('INDEXFIELD'))[0]
+                    indexF.order = matchIndex.group('ORDENACAO')
+                    indexF.abbreviated = matchIndex.group('ABBREVIATED')
+                    indexF.nameIndex = index.name
+                    indexF.nameTable = index.nameTable
+                    i += 1
+                    indexF.seq = i
+                    index.indexField[indexF.fieldName] = indexF
 
         return index
+
 
 class ModeloSequece(ModeloComando):
     def converter(self, comandoStr):
@@ -150,6 +165,7 @@ class ModeloSequece(ModeloComando):
                     sequence.maxVal = compileDados.findall(match.groupdict()['MAXVAL'])[0]
 
         return sequence
+
 
 def isTable(comando):
     return (comando.strip()[:9] == "ADD TABLE")

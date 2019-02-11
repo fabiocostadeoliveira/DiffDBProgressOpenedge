@@ -66,6 +66,28 @@ def compareField(field1, field2)->str:
     if dif:
         return comando.format(fieldName=field1.name,tableName=field1.nameTable)
 
+
+def compare_index(index1, index2) -> str:
+    dif: bool = False
+    comando = sintaxe.UPDATE_INDEX + '\n'
+
+    if index2 is None:
+        return str(index1)
+
+    properties = ""
+    if index1.area != index2.area:
+        dif = True
+        properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=index1.area)
+    if index1.unique != index2.unique:
+        dif = True
+        properties += sintaxe.PROP_NONE.format(prop_name="UNIQUE")
+    if index1.primary != index2.primary:
+        dif = True
+        properties += sintaxe.PROP_NONE.format(prop_name="PRIMARY")
+
+    if dif:
+        return comando.format(indexName=index1.name, tableName=index1.nameTable, properties=properties)
+
 from load_dump_file import ler_df
 
 dump1 = ler_df("./df1.df")
@@ -75,18 +97,10 @@ for table in dump1.tables:
     t = dump1.tables.get(table,None)
     t2 = dump2.tables.get(table,None)
 
-    print(compareTable(t, t2))
-
-
-    for field in t.fields:
-        f1 = t.fields.get(field, None)
-        if(t2 == None):
-            f2 = None
-        else:
-            f2 =  t2.fields.get(field,None)
-
-        print(compareField(f1,f2))
-
     for index in t.indexes:
-        print("Tabela: ", t.name)
-        print("Indice: ", t.name, t.indexes.get(index,None))
+        i1 = t.indexes.get(index, None)
+        if (t2 == None):
+            i2 = None
+        else:
+            i2 = t2.indexes.get(index, None)
+        print(compare_index(i1, i2))
