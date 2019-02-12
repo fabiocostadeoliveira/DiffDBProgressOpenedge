@@ -3,7 +3,7 @@ ADD TABLE "acr001"
   DUMP-NAME "acr001"
 
 ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal 
-  DESCRIPTION "Codigo da Distribuicao"
+  DESCRIPTION "Codigo da Distribuicao josi"
   FORMAT "zzzz9"
   INITIAL "0"
   LABEL "Cod.Distribuicao"
@@ -12,6 +12,30 @@ ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
   HELP "Codigo da Distribuicao"
   DECIMALS 0
   ORDER 10
+
+ADD FIELD "Observacao" OF "acr001" AS logical
+  DESCRIPTION "Observacao"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Observacao"
+  POSITION 4
+  COLUMN-LABEL "Observacao"
+  HELP "Observacao"
+  ORDER 30
+
+ADD INDEX "aac001-2" ON "acr001"
+  INDEX-FIELD "descricao" ASCENDING
+  INDEX-FIELD "empresa" ASCENDING
+
+ADD INDEX "aac001-3" ON "acr001"
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD INDEX "aac001-4" ON "acr001"
+  PRIMARY
+  UNIQUE
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
 
 ADD FIELD "codigo" OF "acr001" AS decimal
   DESCRIPTION "Codigo da Distribuicao"

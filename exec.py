@@ -1,5 +1,5 @@
-from load_dump_file import ler_df
 from sintaxe import sintaxe
+from field_util import rename_field
 
 '''
 aaa = ler_df("./df.df")
@@ -29,14 +29,20 @@ def compareTable(table1, table2)->str:
     if dif:
         return comando.format(tableName=table1.name)
 
+    return ''
+
+
 def compareField(field1, field2)->str:
     dif: bool = False
     comando = sintaxe.UPDATE_FIELD + '\n'
 
-    if (field2 == None):
+    if field2 is None:
         return str(field1)
 
-    if (field1.description != field2.description):
+    if field1.typeField.__eq__(field2.typeField):
+        return rename_field(field1, field2)
+
+    if field1.description != field2.description:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=field1.description)
     if (field1.formatt != field2.formatt):
@@ -66,27 +72,32 @@ def compareField(field1, field2)->str:
     if dif:
         return comando.format(fieldName=field1.name,tableName=field1.nameTable)
 
+    return ''
+
 
 def compare_index(index1, index2) -> str:
     dif: bool = False
-    comando = sintaxe.UPDATE_INDEX + '\n'
+
+    comando = ""
 
     if index2 is None:
         return str(index1)
 
-    properties = ""
-    if index1.area != index2.area:
-        dif = True
-        properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=index1.area)
-    if index1.unique != index2.unique:
-        dif = True
-        properties += sintaxe.PROP_NONE.format(prop_name="UNIQUE")
-    if index1.primary != index2.primary:
-        dif = True
-        properties += sintaxe.PROP_NONE.format(prop_name="PRIMARY")
+    dif = index1.area != index2.area or index2.unique != index1.unique or index2.primary != index1.primary
 
     if dif:
-        return comando.format(indexName=index1.name, tableName=index1.nameTable, properties=properties)
+        comando = sintaxe.RENAME_INDEX.format(
+            indexName=index2.name,
+            tableName=index2.nameTable,
+            newName=index2.name + "_old"
+        ) + "\n"
+
+        comando += index1.__str__() + "\n"
+
+        comando += sintaxe.DROP_INDEX.format(indexName=index2.name + "_old", tableName=index2.nameTable)
+
+    return comando
+
 
 from load_dump_file import ler_df
 
@@ -97,10 +108,26 @@ for table in dump1.tables:
     t = dump1.tables.get(table,None)
     t2 = dump2.tables.get(table,None)
 
+    comando = compareTable(t, t2)
+    if comando is not '':
+        print(comando)
+
+    for field in t.fields:
+        f1 = t.fields.get(field, None)
+        if t2 is None:
+            f2 = None
+        else:
+            f2 = t2.fields.get(field, None)
+        comando = compareField(f1, f2)
+        if comando is not '':
+            print(comando)
+
     for index in t.indexes:
         i1 = t.indexes.get(index, None)
-        if (t2 == None):
+        if t2 is None:
             i2 = None
         else:
             i2 = t2.indexes.get(index, None)
-        print(compare_index(i1, i2))
+        comando = compare_index(i1, i2)
+        if comando is not '':
+            print(comando)

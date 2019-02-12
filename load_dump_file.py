@@ -106,6 +106,7 @@ class ModeloIndex(ModeloComando):
 
         index = Index()
 
+        i = 0
         for matchNum, match in enumerate(matches):
             if match.lastgroup == 'ADDINDEX':
                #index.name = compileDados.findall(match.groupdict()['ADDINDEX'])[0]
@@ -123,7 +124,6 @@ class ModeloIndex(ModeloComando):
                 index.primary = True
             elif match.lastgroup == 'INDEXFIELD':
                 matchesIndex = re.finditer(RegexUtil.REGEX_INDEX_FIELD, match.groupdict()['INDEXFIELD'],re.MULTILINE | re.IGNORECASE)
-                i = 0
                 for matchNum1, matchIndex in enumerate(matchesIndex):
                     indexF = IndexField()
                     indexF.fieldName = compileString.findall(matchIndex.group('INDEXFIELD'))[0]

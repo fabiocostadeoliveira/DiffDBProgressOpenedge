@@ -36,21 +36,6 @@ class Field:
 
 
     def __str__(self):
-        '''
-
-ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
-  DESCRIPTION "Codigo da Distribuicao"
-  FORMAT "zzzz9"
-  INITIAL "0"
-  LABEL "Cod.Distribuicao...."
-  POSITION 290
-  COLUMN-LABEL "Cod!Distribuicao"
-  HELP "Codigo da Distribuicao "
-  DECIMALS 83
-  ORDER 432
-
-
-        '''
         properties = ""
         if (self.description != ""):
             dif = True
@@ -81,7 +66,11 @@ ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
             properties += sintaxe.PROP_QUOTE.format(prop_name="ORDER", prop_value=self.order)
 
         if dif:
-            return sintaxe.ADD_FIELD_ALL.format(fieldName=self.name,tableName=self.nameTable,properties=properties)
+            return sintaxe.ADD_FIELD_ALL.format(
+                fieldName=self.name,
+                tableName=self.nameTable,
+                type=self.typeField,
+                properties=properties)
 
     def _eq_(self, other):
         if (type(other) is Field):

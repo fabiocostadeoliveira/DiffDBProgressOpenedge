@@ -54,7 +54,7 @@ class IndexField:
             return False
 
     def __str__(self):
-        cmdstr = "  INDEX FIELD \"" + self.fieldName + "\""
+        cmdstr = "  INDEX-FIELD \"" + self.fieldName + "\""
         if self.order != '':
             cmdstr += " " + self.order
         if self.abbreviated:

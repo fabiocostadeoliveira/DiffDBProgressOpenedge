@@ -24,9 +24,33 @@ ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
   DECIMALS 83
   ORDER 432
 
+ADD FIELD "Observacao" OF "acr001" AS character
+  DESCRIPTION "Observacao"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Observacao"
+  POSITION 4
+  COLUMN-LABEL "Observacao"
+  HELP "Observacao"
+  ORDER 30
+
 ADD INDEX "aac001-1" ON "acr001"
   UNIQUE
   PRIMARY
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD INDEX "aac001-2" ON "acr001"
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "descricao" ASCENDING
+
+ADD INDEX "aac001-3" ON "acr001"
+  PRIMARY
+  UNIQUE
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD INDEX "aac001-4" ON "acr001"
   INDEX-FIELD "empresa" ASCENDING
   INDEX-FIELD "documento" ASCENDING
 
