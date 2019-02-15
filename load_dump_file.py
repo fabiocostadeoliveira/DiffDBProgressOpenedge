@@ -1,26 +1,41 @@
 #from builtins import print
-import sequence
+
 from table import Table
 from field import Field
-from index import Index
+from index import Index, IndexField
 from sequence import Sequence
 
 import abc
 import re
+
+class Dict:
+    fields:list
+    indexes:list
+    sequences:list
+
+    def __init__(self):
+        self.tables = {}
+        self.fields = []
+        self.indexes = []
+        self.sequences = []
 
 class RegexUtil:
     REGEX_TABLE = open('./table_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_FIELD = open('./field_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_INDEX = open('./index_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_SEQUE = open('./seque_regex.txt', encoding='utf-8', mode='r').read()
-
+    REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9]*)"
+    REGEX_PROP_SEM_ASPAS = r".*\s(?P<CONTEUDO>\w.*)"
     REGEX_PROP_STRING = r"\"(?P<dados>.*)\""
-    REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9])"
+    REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
+    REGEX_ADD_INDEX = r"(?P<ADDINDEX>add\s*index\s*)(?P<INDICE>\".*?\")(?P<TABELA>\sON\s*\".*\")"
+    REGEX_INDEX_FIELD = r"(?P<INDEXFIELD>index-field\s*\".*\"\s*(?P<ORDENACAO>ASCENDING|DESCENDING)\s*(?P<ABBREVIATED>ABBREVIATED|))"
 
 class ModeloComando(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def converter(self, comandoStr):
         return
+
 
 class ModeloTable(ModeloComando):
     def converter(self, comandoStr):
@@ -40,9 +55,9 @@ class ModeloTable(ModeloComando):
                 table.label = compileDados.findall(match.groupdict()['LABEL'])[0]
             elif match.lastgroup == 'ADDTABLE':
                 table.name = compileDados.findall(match.groupdict()['ADDTABLE'])[0]
-        '''
-        print(table)
-        '''
+        return table
+
+
 class ModeloField(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -73,10 +88,17 @@ class ModeloField(ModeloComando):
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
             elif match.lastgroup == 'ADDFIELD':
-                field.name = compileDados.findall(match.groupdict()['ADDFIELD'])[0]
-        '''
-        print(field)
-        '''
+                matchesField = re.finditer(RegexUtil.REGEX_ADD_FIELD, match.groupdict()['ADDFIELD'], re.MULTILINE | re.IGNORECASE)
+                for matchNum1, matchField in enumerate(matchesField):
+                    compileString = re.compile(RegexUtil.REGEX_PROP_STRING)
+                    compileSemAspas = re.compile(RegexUtil.REGEX_PROP_SEM_ASPAS)
+                    field.nameTable = compileString.findall(matchField.group('TABELA'))[0]
+                    field.typeField = compileSemAspas.findall(matchField.group('TIPO'))[0]
+                    field.name = compileString.findall(matchField.group('CAMPO'))[0]
+
+        return field
+
+
 class ModeloIndex(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
@@ -84,9 +106,16 @@ class ModeloIndex(ModeloComando):
 
         index = Index()
 
+        i = 0
         for matchNum, match in enumerate(matches):
             if match.lastgroup == 'ADDINDEX':
-               index.name = compileDados.findall(match.groupdict()['ADDINDEX'])[0]
+               #index.name = compileDados.findall(match.groupdict()['ADDINDEX'])[0]
+               matchesIndex = re.finditer(RegexUtil.REGEX_ADD_INDEX, match.groupdict()['ADDINDEX'], re.MULTILINE | re.IGNORECASE)
+               for matchNum1, matchIndex in enumerate(matchesIndex):
+                   compileString = re.compile(RegexUtil.REGEX_PROP_STRING)
+                   index.name = matchIndex.group('INDICE').replace("\"","")
+                   index.nameTable = compileString.findall(matchIndex.group('TABELA'))[0]
+
             elif match.lastgroup == 'AREA':
                 index.area = compileDados.findall(match.groupdict()['AREA'])[0]
             elif match.lastgroup == 'UNIQUE':
@@ -94,9 +123,20 @@ class ModeloIndex(ModeloComando):
             elif match.lastgroup == 'PRIMARY':
                 index.primary = True
             elif match.lastgroup == 'INDEXFIELD':
-                index.indexField = compileDados.findall(match.groupdict()['INDEXFIELD'])[0]
+                matchesIndex = re.finditer(RegexUtil.REGEX_INDEX_FIELD, match.groupdict()['INDEXFIELD'],re.MULTILINE | re.IGNORECASE)
+                for matchNum1, matchIndex in enumerate(matchesIndex):
+                    indexF = IndexField()
+                    indexF.fieldName = compileString.findall(matchIndex.group('INDEXFIELD'))[0]
+                    indexF.order = matchIndex.group('ORDENACAO')
+                    indexF.abbreviated = matchIndex.group('ABBREVIATED')
+                    indexF.nameIndex = index.name
+                    indexF.nameTable = index.nameTable
+                    i += 1
+                    indexF.seq = i
+                    index.indexField[indexF.fieldName] = indexF
 
-        print(index)
+        return index
+
 
 class ModeloSequece(ModeloComando):
     def converter(self, comandoStr):
@@ -124,7 +164,8 @@ class ModeloSequece(ModeloComando):
                 if len(compileDados.findall(match.groupdict()['MAXVAL'])) > 0:
                     sequence.maxVal = compileDados.findall(match.groupdict()['MAXVAL'])[0]
 
-        print(sequence)
+        return sequence
+
 
 def isTable(comando):
     return (comando.strip()[:9] == "ADD TABLE")
@@ -146,14 +187,39 @@ def getModeloConversao(comando):
     elif (isSequence(comando)):
         return  ModeloSequece()
 
-f = open('./df.df', 'r')
+'''
+Inicio Execução
+'''
 
-texto = f.read()
+def ler_df(arquivo):
+    f = open(arquivo, 'r', encoding="utf-8", errors='ignore')
+    texto = f.read()
 
-comando = None
+    comando = None
 
-for cmd in texto.split("ADD"):
-    if(len(cmd.replace("\n", "").strip()) > 0):
-        comando = "ADD" + cmd
-        modeloComando = getModeloConversao(comando)
-        modeloComando.converter(comando)
+    dump = Dict()
+    for cmd in texto.split("ADD"):
+        if(len(cmd.replace("\n", "").strip()) > 0):
+            comando = "ADD" + cmd
+            modeloComando = getModeloConversao(comando)
+            comando = modeloComando.converter(comando)
+            if type(comando) is Table:
+                tabela: Table
+                tabela = comando
+                dump.tables[tabela.name] = tabela
+            elif type(comando) is Field:
+                field: Field
+                field = comando
+                dump.tables[field.nameTable].addField(field)
+                dump.fields.append(field)
+            elif type(comando) is Index:
+                index: Index
+                index = comando
+                dump.tables[index.nameTable].addIndex(index)
+                dump.indexes.append(index)
+            elif type(comando) is Sequence:
+                sequence: Sequence
+                sequence = comando
+                dump.sequences.append(sequence)
+    return dump
+

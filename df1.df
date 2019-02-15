@@ -1,0 +1,66 @@
+ADD TABLE "acr001"
+  LABEL "Cadastro de Distribuicoes"
+  DESCRIPTION "Cadastro de Distribuicoes"
+  DUMP-NAME "acr001"
+
+ADD TABLE "acr002"
+  LABEL "Cadastro de josimesio"
+  DESCRIPTION "Cadastro de Distribuicoes josimesios"
+  DUMP-NAME "acr002"
+
+ADD TABLE "acr003"
+  LABEL "Josino"
+  DESCRIPTION "Josino"
+  DUMP-NAME "acr003"
+
+ADD FIELD "codigoDistribuicao" OF "acr001" AS decimal
+  DESCRIPTION "Codigo da Distribuicao"
+  FORMAT "zzzz9"
+  INITIAL "0"
+  LABEL "Cod.Distribuicao...."
+  POSITION 290
+  COLUMN-LABEL "Cod!Distribuicao"
+  HELP "Codigo da Distribuicao "
+  DECIMALS 83
+  ORDER 432
+
+ADD FIELD "Observacao" OF "acr001" AS character
+  DESCRIPTION "Observacao"
+  FORMAT "x(8)"
+  INITIAL ""
+  LABEL "Observacao"
+  POSITION 4
+  COLUMN-LABEL "Observacao"
+  HELP "Observacao"
+  ORDER 30
+
+ADD INDEX "aac001-1" ON "acr001"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD INDEX "aac001-2" ON "acr001"
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "descricao" ASCENDING
+
+ADD INDEX "aac001-3" ON "acr001"
+  PRIMARY
+  UNIQUE
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD INDEX "aac001-4" ON "acr001"
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "documento" ASCENDING
+
+ADD FIELD "codigoDistribuicao" OF "acr003" AS character
+  DESCRIPTION "teste de field"
+  FORMAT "x(10)"
+  INITIAL "0"
+  LABEL "Cod. do josi"
+  POSITION 290
+  COLUMN-LABEL "Cod!josi"
+  HELP "va pa merda "
+  DECIMALS 10
+  ORDER 4

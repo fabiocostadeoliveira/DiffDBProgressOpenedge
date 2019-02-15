@@ -1,13 +1,17 @@
+import field as Field
+import index as Index
+from sintaxe import sintaxe
+
 class Table:
 
     name: str
     area: str
     label: str
     description: str
-    dumpName: str
+    dump_name: str
     tableTrigger: list
-    fields: list
-    indexes: list
+    fields: dict
+    indexes: dict
 
     def __init__(self):
         self.name          = str()
@@ -16,12 +20,36 @@ class Table:
         self.description   = str()
         self.dump_name     = str()
         self.table_trigger = list()
-        self.fields        = list()
-        self.indexes       = list()
+        self.fields        = dict()
+        self.indexes       = dict()
+
+    def addField(self,field:Field):
+        #self.fields.append(field)
+        self.fields.update({field.name:field})
+    def addIndex(self,index:Index):
+        self.indexes.update({index.name:index})
 
     def __str__(self):
-        return self.name + " - " + self.dump_name + " - " + self.label + " - " + self.area + " - " + self.description
+        properties = ""
+        #print('area=' + self.area + str(self.area != None) )
+        if (self.area != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=self.area)
+        if (self.label != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=self.label)
+        if (self.description != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=self.description)
+        if (self.dump_name != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="DUMP-NAME", prop_value=self.dump_name)
+        if dif:
+            return sintaxe.ADD_TABLE_ALL.format(tableName=self.name,properties=properties)
 
-
-
+    def _eq_(self, other):
+        if (type(other) is Table):
+            return other.name == self.name
+        else:
+            return False
 

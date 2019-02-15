@@ -1,16 +1,11 @@
 import re
 
-regex = r"(?P<ADDTABLE>add\s*table\s*\".*\")|(?P<AREA>area\s*\".*\")|(?P<LABEL>label\s*\".*\")|(?P<DESCRIPTION>description\s*\".*\")|(?P<DUMPNAME>dump-name\s*\".*\")|(?P<TABLETRIGGER>TABLE-TRIGGER\s*\".*\"\sOVERRIDE\sPROCEDURE\s*\".*\"\scrc\s\".*\")"
+regex = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
 
-test_str = ("ADD TABLE \"acr001\"\n"
-            "  AREA \"Schema Area\"\n"
-            "  LABEL \"Cadastro de Distribuicoes\"\n"
-            "  DESCRIPTION \"Cadastro de Distribuicoes\"\n"
-            "  DUMP-NAME \"acr001\"\n"
-            "  TABLE-TRIGGER \"Delete\" OVERRIDE PROCEDURE \"acr001de.trg\" CRC \"?as.\"\n"
-            "  TABLE-TRIGGER \"create\" OVERRIDE PROCEDURE \"acr001cr.trg\" CRC \"as.\"\n"
-            "  TABLE-TRIGGER \"create\" OVERRIDE PROCEDURE \"acr001cr.trg\" CRC \",.;:?/°/][´`Oó!@#$%¨&*()-+\"\n"
-            " ")
+test_str = ("ADD FIELD \"codigoDistribuicao\" OF \"acr001\" AS decimal")
+compile = re.compile(regex)
+result = compile.findall(test_str)
+print(len(result))
 
 matches = re.finditer(regex, test_str, re.MULTILINE | re.IGNORECASE)
 for matchNum, match in enumerate(matches):

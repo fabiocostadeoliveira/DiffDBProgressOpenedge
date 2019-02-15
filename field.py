@@ -1,9 +1,9 @@
-from table import Table
+from sintaxe import sintaxe
 
 class Field:
-
-    table: Table
     name: str
+    nameTable: str
+    typeField: str
     formatt: str
     initial:str
     label: str
@@ -15,9 +15,9 @@ class Field:
     help: str
     order: str
     decimals: str
+    description: str
 
     def __init__(self):
-        self.table = Table()
         self.name = ""
         self.formatt = ""
         self.initial = ""
@@ -30,6 +30,50 @@ class Field:
         self.help = ""
         self.order = ""
         self.decimals = ""
+        self.nameTable = ""
+        self.description = ""
+
+
 
     def __str__(self):
-        return self.name + " - " + self.label + " - " + self.formatt
+        properties = ""
+        if (self.description != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=self.description)
+        if (self.formatt != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="FORMAT", prop_value=self.formatt)
+        if (self.initial != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="INITIAL", prop_value=self.initial)
+        if (self.label != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=self.label)
+        if (self.position != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="POSITION", prop_value=self.position)
+        if (self.columnLabel != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="COLUMN-LABEL", prop_value=self.columnLabel)
+        if (self.help != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="HELP", prop_value=self.help)
+        if (self.decimals != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="DECIMALS", prop_value=self.decimals)
+        if (self.order != ""):
+            dif = True
+            properties += sintaxe.PROP_QUOTE.format(prop_name="ORDER", prop_value=self.order)
+
+        if dif:
+            return sintaxe.ADD_FIELD_ALL.format(
+                fieldName=self.name,
+                tableName=self.nameTable,
+                type=self.typeField,
+                properties=properties)
+
+    def _eq_(self, other):
+        if (type(other) is Field):
+            return other.nameTable == self.nameTable and other.name == self.name
+        else:
+            return False
