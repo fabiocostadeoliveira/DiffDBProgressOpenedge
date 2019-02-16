@@ -37,6 +37,10 @@ ADD INDEX "aac001-4" ON "acr001"
   INDEX-FIELD "empresa" ASCENDING
   INDEX-FIELD "documento" ASCENDING
 
+ADD INDEX "aac001-5" ON "acr001"
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "descricao" ASCENDING
+
 ADD FIELD "codigo" OF "acr001" AS decimal
   DESCRIPTION "Codigo da Distribuicao"
   FORMAT "zzzz9"
@@ -47,3 +51,36 @@ ADD FIELD "codigo" OF "acr001" AS decimal
   HELP "Codigo da Distribuicao"
   DECIMALS 0
   ORDER 10
+
+ADD TABLE "nfe010"
+  LABEL "Tabela de codigos de erros NFE"
+  DESCRIPTION "Tabela de codigos e descricoes das mensagens de erros - NFE"
+  DUMP-NAME "nfe010"
+  TABLE-TRIGGER "Delete" OVERRIDE PROCEDURE "nfe010de.trg" CRC "?"
+  TABLE-TRIGGER "Write" OVERRIDE PROCEDURE "nfe010wr.trg" CRC "?"
+
+ADD FIELD "empresa" OF "nfe010" AS integer
+  DESCRIPTION "Codigo da empresa"
+  FORMAT "99"
+  INITIAL "0"
+  LABEL "Empresa........."
+  POSITION 2
+  COLUMN-LABEL "Empresa"
+  HELP "Codigo da empresa"
+  ORDER 10
+
+ADD TABLE "nfe011"
+  LABEL "Tipos de Status de Retorno"
+  DESCRIPTION "Tipos de Status de Retorno"
+  DUMP-NAME "nfe011"
+
+ADD FIELD "tipo" OF "acr001" AS character
+  DESCRIPTION "[0]Retentar / [1]Erro / [2]Denegada / [3]Aceita / [4]Contingenc / 5 ED"
+  FORMAT "x(1)"
+  INITIAL ""
+  LABEL "TipoCodigo......"
+  POSITION 2
+  COLUMN-LABEL "Tipo"
+  HELP "[0]Retentar / [1]Erro / [2]Denegada / [3]Aceita / [4]Contingenc"
+  ORDER 10
+

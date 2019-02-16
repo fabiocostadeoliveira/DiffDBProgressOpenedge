@@ -1,4 +1,4 @@
-from sintaxe import sintaxe
+from core.sintaxe import sintaxe
 
 class Field:
     name: str

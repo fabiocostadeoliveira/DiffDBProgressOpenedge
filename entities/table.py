@@ -1,6 +1,5 @@
-import field as Field
-import index as Index
-from sintaxe import sintaxe
+from core.sintaxe import sintaxe
+
 
 class Table:
 
@@ -23,11 +22,14 @@ class Table:
         self.fields        = dict()
         self.indexes       = dict()
 
-    def addField(self,field:Field):
-        #self.fields.append(field)
-        self.fields.update({field.name:field})
-    def addIndex(self,index:Index):
-        self.indexes.update({index.name:index})
+
+    def addField(self, field):
+        self.fields.update({field.name: field})
+
+
+    def addIndex(self, index):
+        self.indexes.update({index.name: index})
+
 
     def __str__(self):
         properties = ""
@@ -46,6 +48,7 @@ class Table:
             properties += sintaxe.PROP_QUOTE.format(prop_name="DUMP-NAME", prop_value=self.dump_name)
         if dif:
             return sintaxe.ADD_TABLE_ALL.format(tableName=self.name,properties=properties)
+
 
     def _eq_(self, other):
         if (type(other) is Table):

@@ -15,4 +15,6 @@ class sintaxe:
     RENAME_INDEX = "RENAME INDEX \"{indexName}\" ON \"{tableName}\" TO \"{newName}\"\n"
     RENAME_FIELD = "RENAME FIELD \"{fieldName}\" OF \"{tableName}\" TO \"{newName}\"\n"
     DROP_INDEX = "DROP INDEX \"{indexName}\" ON \"{tableName}\"\n"
+    DROP_TABLE = "DROP TABLE \"{tableName}\"\n"
+    DROP_FIELD = "DROP FIELD \"{fieldName}\" ON \"{tableName}\"\n"
 

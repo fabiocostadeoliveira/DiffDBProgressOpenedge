@@ -1,5 +1,5 @@
-from sintaxe import sintaxe
-from field_util import rename_field
+from core.sintaxe import sintaxe
+from util.field_util import rename_field
 
 '''
 aaa = ler_df("./df.df")
@@ -99,21 +99,21 @@ def compare_index(index1, index2) -> str:
     return comando
 
 
-from load_dump_file import ler_df
+from core.load_dump_file import ler_df
 
-dump1 = ler_df("./df1.df")
-dump2 = ler_df("./df2.df")
+dump1 = ler_df("./dumps/df1.df")
+dump2 = ler_df("./dumps/df2.df")
 
 for table in dump1.tables:
-    t = dump1.tables.get(table,None)
+    t1  = dump1.tables.get(table, None)
     t2 = dump2.tables.get(table,None)
 
-    comando = compareTable(t, t2)
+    comando = compareTable(t1, t2)
     if comando is not '':
         print(comando)
 
-    for field in t.fields:
-        f1 = t.fields.get(field, None)
+    for field in t1.fields:
+        f1 = t1.fields.get(field, None)
         if t2 is None:
             f2 = None
         else:
@@ -122,8 +122,8 @@ for table in dump1.tables:
         if comando is not '':
             print(comando)
 
-    for index in t.indexes:
-        i1 = t.indexes.get(index, None)
+    for index in t1.indexes:
+        i1 = t1.indexes.get(index, None)
         if t2 is None:
             i2 = None
         else:
@@ -131,3 +131,44 @@ for table in dump1.tables:
         comando = compare_index(i1, i2)
         if comando is not '':
             print(comando)
+
+
+def drop_table_comando(table)->str:
+    return sintaxe.DROP_TABLE.format(tableName=table.name)
+
+
+def drop_field_comando(field)->str:
+    return sintaxe.DROP_FIELD.format(fieldName=field.name,tableName=field.nameTable)
+
+
+def drop_index_comando(index)->str:
+    return sintaxe.DROP_INDEX.format(indexName=index.name,tableName=index.nameTable)
+
+def get_propriedade(obj, name):
+    return obj.get(name, None)
+
+def obj_is_none(table, prop, obj, funcao):
+    if table is None:
+        return None
+    else:
+        return funcao(prop,obj)
+
+
+# DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
+for table in dump2.tables:
+    t1 = dump1.tables.get(table, None)
+    t2 = dump2.tables.get(table, None)
+
+    if t1 is None:
+        print(drop_table_comando(t2))
+        continue
+
+    for field in t2.fields:
+        f1 = obj_is_none(t1, t1.fields, field, get_propriedade)
+        if f1 is None:
+            print(drop_field_comando(t2.fields[field]))
+
+    for index in t2.indexes:
+        i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
+        if i1 is None:
+            print(drop_index_comando(t2.indexes[index]))

@@ -1,9 +1,9 @@
 #from builtins import print
 
-from table import Table
-from field import Field
-from index import Index, IndexField
-from sequence import Sequence
+from entities.table import Table
+from entities.field import Field
+from entities.index import Index, IndexField
+from entities.sequence import Sequence
 
 import abc
 import re
@@ -20,10 +20,10 @@ class Dict:
         self.sequences = []
 
 class RegexUtil:
-    REGEX_TABLE = open('./table_regex.txt', encoding='utf-8', mode='r').read()
-    REGEX_FIELD = open('./field_regex.txt', encoding='utf-8', mode='r').read()
-    REGEX_INDEX = open('./index_regex.txt', encoding='utf-8', mode='r').read()
-    REGEX_SEQUE = open('./seque_regex.txt', encoding='utf-8', mode='r').read()
+    REGEX_TABLE = open('./regex/table_regex.txt', encoding='utf-8', mode='r').read()
+    REGEX_FIELD = open('./regex/field_regex.txt', encoding='utf-8', mode='r').read()
+    REGEX_INDEX = open('./regex/index_regex.txt', encoding='utf-8', mode='r').read()
+    REGEX_SEQUE = open('./regex/seque_regex.txt', encoding='utf-8', mode='r').read()
     REGEX_PROP_INT = r".*\s(?P<VALOR>[0-9]*)"
     REGEX_PROP_SEM_ASPAS = r".*\s(?P<CONTEUDO>\w.*)"
     REGEX_PROP_STRING = r"\"(?P<dados>.*)\""

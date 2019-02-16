@@ -1,4 +1,4 @@
-from sintaxe import sintaxe
+from core.sintaxe import sintaxe
 
 
 def rename_field(field1, field2) -> str:

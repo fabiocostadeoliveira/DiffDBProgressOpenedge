@@ -1,4 +1,4 @@
-from sintaxe import sintaxe
+from core.sintaxe import sintaxe
 
 
 def dif_index_fields(index1, index2) -> str:
