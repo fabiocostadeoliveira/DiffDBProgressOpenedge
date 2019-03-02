@@ -1,12 +1,7 @@
 from core.sintaxe import sintaxe
 from util.field_util import rename_field
+from core.load_dump_file import ler_df
 
-'''
-aaa = ler_df("./df.df")
-field = aaa.tables['acr001'].fields[0]
-print(field.typeField)
-
-'''
 
 def compareTable(table1, table2)->str:
     dif: bool = False
@@ -99,40 +94,6 @@ def compare_index(index1, index2) -> str:
     return comando
 
 
-from core.load_dump_file import ler_df
-
-dump1 = ler_df("./dumps/df1.df")
-dump2 = ler_df("./dumps/df2.df")
-
-for table in dump1.tables:
-    t1  = dump1.tables.get(table, None)
-    t2 = dump2.tables.get(table,None)
-
-    comando = compareTable(t1, t2)
-    if comando is not '':
-        print(comando)
-
-    for field in t1.fields:
-        f1 = t1.fields.get(field, None)
-        if t2 is None:
-            f2 = None
-        else:
-            f2 = t2.fields.get(field, None)
-        comando = compareField(f1, f2)
-        if comando is not '':
-            print(comando)
-
-    for index in t1.indexes:
-        i1 = t1.indexes.get(index, None)
-        if t2 is None:
-            i2 = None
-        else:
-            i2 = t2.indexes.get(index, None)
-        comando = compare_index(i1, i2)
-        if comando is not '':
-            print(comando)
-
-
 def drop_table_comando(table)->str:
     return sintaxe.DROP_TABLE.format(tableName=table.name)
 
@@ -144,8 +105,10 @@ def drop_field_comando(field)->str:
 def drop_index_comando(index)->str:
     return sintaxe.DROP_INDEX.format(indexName=index.name,tableName=index.nameTable)
 
+
 def get_propriedade(obj, name):
     return obj.get(name, None)
+
 
 def obj_is_none(table, prop, obj, funcao):
     if table is None:
@@ -153,22 +116,72 @@ def obj_is_none(table, prop, obj, funcao):
     else:
         return funcao(prop,obj)
 
+def compara_dump1_x_dump2(dump1,dump2):
+
+    for table in dump1.tables:
+        t1 = dump1.tables.get(table, None)
+        t2 = dump2.tables.get(table, None)
+
+        comando = compareTable(t1, t2)
+        if comando is not '':
+            print(comando)
+
+        for field in t1.fields:
+            f1 = t1.fields.get(field, None)
+            if t2 is None:
+                f2 = None
+            else:
+                f2 = t2.fields.get(field, None)
+            comando = compareField(f1, f2)
+            if comando is not '':
+                print(comando)
+
+        for index in t1.indexes:
+            i1 = t1.indexes.get(index, None)
+            if t2 is None:
+                i2 = None
+            else:
+                i2 = t2.indexes.get(index, None)
+            comando = compare_index(i1, i2)
+            if comando is not '':
+                print(comando)
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
-for table in dump2.tables:
-    t1 = dump1.tables.get(table, None)
-    t2 = dump2.tables.get(table, None)
+def compara_dump2_x_dump1(dump1,dump2):
+    for table in dump2.tables:
+        t1 = dump1.tables.get(table, None)
+        t2 = dump2.tables.get(table, None)
 
-    if t1 is None:
-        print(drop_table_comando(t2))
-        continue
+        if t1 is None:
+            print(drop_table_comando(t2))
+            continue
 
-    for field in t2.fields:
-        f1 = obj_is_none(t1, t1.fields, field, get_propriedade)
-        if f1 is None:
-            print(drop_field_comando(t2.fields[field]))
+        for field in t2.fields:
+            f1 = obj_is_none(t1, t1.fields, field, get_propriedade)
+            if f1 is None:
+                print(drop_field_comando(t2.fields[field]))
 
-    for index in t2.indexes:
-        i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
-        if i1 is None:
-            print(drop_index_comando(t2.indexes[index]))
+        for index in t2.indexes:
+            i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
+            if i1 is None:
+                print(drop_index_comando(t2.indexes[index]))
+
+
+def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs):
+
+
+    dump1 = ler_df(fileNameDump1)
+    dump2 = ler_df(fileNameDump2)
+
+    compara_dump1_x_dump2(dump1, dump2)
+    compara_dump2_x_dump1(dump1, dump2)
+
+    print('argumentos',kwargs)
+
+
+if __name__ == '__main__':
+    opcoes = {'fileoutput':'./dump_inc.df','ignoredrops':True}
+    executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
+
+
+
