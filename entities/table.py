@@ -13,14 +13,14 @@ class Table:
     indexes: dict
 
     def __init__(self):
-        self.name          = str()
-        self.area          = str()
-        self.label         = str()
-        self.description   = str()
-        self.dump_name     = str()
+        self.name = str()
+        self.area = str()
+        self.label = str()
+        self.description = str()
+        self.dump_name = str()
         self.table_trigger = list()
-        self.fields        = dict()
-        self.indexes       = dict()
+        self.fields = dict()
+        self.indexes = dict()
 
 
     def addField(self, field):

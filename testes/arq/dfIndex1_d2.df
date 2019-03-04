@@ -6,5 +6,4 @@ ADD INDEX "aac014-1" ON "aac014"
   UNIQUE
   PRIMARY
   INDEX-FIELD "empresa" ASCENDING
-  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING
   INDEX-FIELD "sequencia" ASCENDING

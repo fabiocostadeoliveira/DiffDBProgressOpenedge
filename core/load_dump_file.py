@@ -194,6 +194,7 @@ Inicio Execução
 def ler_df(arquivo):
     f = open(arquivo, 'r', encoding="utf-8", errors='ignore')
     texto = f.read()
+    f.close()
 
     comando = None
 

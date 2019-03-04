@@ -1,5 +1,6 @@
 from core.sintaxe import sintaxe
 
+
 class Field:
     name: str
     nameTable: str
@@ -33,35 +34,33 @@ class Field:
         self.nameTable = ""
         self.description = ""
 
-
-
     def __str__(self):
         properties = ""
-        if (self.description != ""):
+        if self.description != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=self.description)
-        if (self.formatt != ""):
+        if self.formatt != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="FORMAT", prop_value=self.formatt)
-        if (self.initial != ""):
+        if self.initial != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="INITIAL", prop_value=self.initial)
-        if (self.label != ""):
+        if self.label != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=self.label)
-        if (self.position != ""):
+        if self.position != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="POSITION", prop_value=self.position)
-        if (self.columnLabel != ""):
+        if self.columnLabel != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="COLUMN-LABEL", prop_value=self.columnLabel)
-        if (self.help != ""):
+        if self.help != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="HELP", prop_value=self.help)
-        if (self.decimals != ""):
+        if self.decimals != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="DECIMALS", prop_value=self.decimals)
-        if (self.order != ""):
+        if self.order != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="ORDER", prop_value=self.order)
 
@@ -73,7 +72,7 @@ class Field:
                 properties=properties)
 
     def _eq_(self, other):
-        if (type(other) is Field):
+        if type(other) is Field:
             return other.nameTable == self.nameTable and other.name == self.name
         else:
             return False
