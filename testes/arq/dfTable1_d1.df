@@ -1,0 +1,3 @@
+ADD TABLE "aac014"
+  DESCRIPTION "Historico das alteracoes do Limite de Credito"
+  DUMP-NAME "aac014"

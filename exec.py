@@ -39,7 +39,7 @@ def compareField(field1, field2)->str:
     if field2 is None:
         return str(field1)
 
-    if field1.typeField.__eq__(field2.typeField):
+    if not(field1.typeField.__eq__(field2.typeField)):
         return rename_field(field1, field2)
 
     if field1.description != field2.description:
@@ -85,6 +85,9 @@ def compare_index(index1, index2) -> str:
 
     dif = index1.area != index2.area or index2.unique != index1.unique or index2.primary != index1.primary
 
+    if not dif:
+        dif = dif_seq(index1, index2)
+
     if dif:
         comando = sintaxe.RENAME_INDEX.format(
             indexName=index2.name,
@@ -98,6 +101,42 @@ def compare_index(index1, index2) -> str:
 
     return comando
 
+
+def dif_seq(i1, i2) -> bool:
+    dif = False
+
+    dif = len(i1.indexField) != len(i2.indexField)
+    if not dif:
+        for indf in i1.indexField:
+            if2 = i2.indexField[indf]
+            if if2 is None:
+                dif = True
+                break
+            if i1.indexField[indf].seq != i2.indexField[indf].seq:
+                dif = True
+                break
+    return dif
+
+
+def drop_table_comando(table)->str:
+    return sintaxe.DROP_TABLE.format(tableName=table.name)
+
+
+def drop_field_comando(field)->str:
+    return sintaxe.DROP_FIELD.format(fieldName=field.name,tableName=field.nameTable)
+
+
+def drop_index_comando(index)->str:
+    return sintaxe.DROP_INDEX.format(indexName=index.name,tableName=index.nameTable)
+
+def get_propriedade(obj, name):
+    return obj.get(name, None)
+
+def obj_is_none(table, prop, obj, funcao):
+    if table is None:
+        return None
+    else:
+        return funcao(prop,obj)
 
 from core.load_dump_file import ler_df
 
