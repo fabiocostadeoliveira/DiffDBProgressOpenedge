@@ -1,12 +1,7 @@
 from core.sintaxe import sintaxe
 from util.field_util import rename_field
+from core.load_dump_file import ler_df
 
-'''
-aaa = ler_df("./df.df")
-field = aaa.tables['acr001'].fields[0]
-print(field.typeField)
-
-'''
 
 def compareTable(table1, table2)->str:
     dif: bool = False
@@ -129,8 +124,10 @@ def drop_field_comando(field)->str:
 def drop_index_comando(index)->str:
     return sintaxe.DROP_INDEX.format(indexName=index.name,tableName=index.nameTable)
 
+
 def get_propriedade(obj, name):
     return obj.get(name, None)
+
 
 def obj_is_none(table, prop, obj, funcao):
     if table is None:
@@ -138,22 +135,19 @@ def obj_is_none(table, prop, obj, funcao):
     else:
         return funcao(prop,obj)
 
-from core.load_dump_file import ler_df
 
+def compara_dump1_x_dump2(dump1,dump2) -> str:
 
-def gerardif(arq1, arq2) -> str:
-    dump1 = ler_df(arq1)
-    dump2 = ler_df(arq2)
-
-    retorno = ""
+    retorno  = ''
     for table in dump1.tables:
-        t1  = dump1.tables.get(table, None)
-        t2 = dump2.tables.get(table,None)
+        t1 = dump1.tables.get(table, None)
+        t2 = dump2.tables.get(table, None)
 
         comando = compareTable(t1, t2)
+        print(comando)
         if comando is not '':
             retorno += comando
-            print(comando)
+            print(retorno)
 
         for field in t1.fields:
             f1 = t1.fields.get(field, None)
@@ -176,8 +170,11 @@ def gerardif(arq1, arq2) -> str:
             if comando is not '':
                 retorno += comando
                 print(comando)
+    return retorno
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
+def compara_dump2_x_dump1(dump1,dump2):
+    retorno = ''
     for table in dump2.tables:
         t1 = dump1.tables.get(table, None)
         t2 = dump2.tables.get(table, None)
@@ -201,5 +198,22 @@ def gerardif(arq1, arq2) -> str:
                 comando = drop_index_comando(t2.indexes[index])
                 retorno += comando
                 print(comando)
-
     return retorno
+
+
+def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs) -> str:
+    dump1 = ler_df(fileNameDump1)
+    dump2 = ler_df(fileNameDump2)
+
+    retorno = compara_dump1_x_dump2(dump1, dump2)
+    retorno += compara_dump2_x_dump1(dump1, dump2)
+    #print('argumentos',kwargs)
+    return retorno
+
+
+if __name__ == '__main__':
+    opcoes = {'fileoutput':'./dump_inc.df','ignoredrops':True}
+    executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
+
+
+
