@@ -183,5 +183,3 @@ if __name__ == '__main__':
     opcoes = {'fileoutput':'./dump_inc.df','ignoredrops':True}
     executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
 
-
-
