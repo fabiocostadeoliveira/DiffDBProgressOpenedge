@@ -1,0 +1,4 @@
+ADD TABLE "aac014"
+  AREA "area1"
+  DESCRIPTION "Historico das alteracoes"
+  DUMP-NAME "aac014"

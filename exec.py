@@ -34,7 +34,7 @@ def compareField(field1, field2)->str:
     if field2 is None:
         return str(field1)
 
-    if field1.typeField.__eq__(field2.typeField):
+    if not(field1.typeField.__eq__(field2.typeField)):
         return rename_field(field1, field2)
 
     if field1.description != field2.description:
@@ -80,6 +80,9 @@ def compare_index(index1, index2) -> str:
 
     dif = index1.area != index2.area or index2.unique != index1.unique or index2.primary != index1.primary
 
+    if not dif:
+        dif = dif_seq(index1, index2)
+
     if dif:
         comando = sintaxe.RENAME_INDEX.format(
             indexName=index2.name,
@@ -92,6 +95,22 @@ def compare_index(index1, index2) -> str:
         comando += sintaxe.DROP_INDEX.format(indexName=index2.name + "_old", tableName=index2.nameTable)
 
     return comando
+
+
+def dif_seq(i1, i2) -> bool:
+    dif = False
+
+    dif = len(i1.indexField) != len(i2.indexField)
+    if not dif:
+        for indf in i1.indexField:
+            if2 = i2.indexField[indf]
+            if if2 is None:
+                dif = True
+                break
+            if i1.indexField[indf].seq != i2.indexField[indf].seq:
+                dif = True
+                break
+    return dif
 
 
 def drop_table_comando(table)->str:
@@ -116,15 +135,19 @@ def obj_is_none(table, prop, obj, funcao):
     else:
         return funcao(prop,obj)
 
-def compara_dump1_x_dump2(dump1,dump2):
 
+def compara_dump1_x_dump2(dump1,dump2) -> str:
+
+    retorno  = ''
     for table in dump1.tables:
         t1 = dump1.tables.get(table, None)
         t2 = dump2.tables.get(table, None)
 
         comando = compareTable(t1, t2)
+        print(comando)
         if comando is not '':
-            print(comando)
+            retorno += comando
+            print(retorno)
 
         for field in t1.fields:
             f1 = t1.fields.get(field, None)
@@ -134,6 +157,7 @@ def compara_dump1_x_dump2(dump1,dump2):
                 f2 = t2.fields.get(field, None)
             comando = compareField(f1, f2)
             if comando is not '':
+                retorno += comando
                 print(comando)
 
         for index in t1.indexes:
@@ -144,39 +168,47 @@ def compara_dump1_x_dump2(dump1,dump2):
                 i2 = t2.indexes.get(index, None)
             comando = compare_index(i1, i2)
             if comando is not '':
+                retorno += comando
                 print(comando)
+    return retorno
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
 def compara_dump2_x_dump1(dump1,dump2):
+    retorno = ''
     for table in dump2.tables:
         t1 = dump1.tables.get(table, None)
         t2 = dump2.tables.get(table, None)
 
         if t1 is None:
-            print(drop_table_comando(t2))
+            comando = drop_table_comando(t2)
+            retorno += comando
+            print(comando)
             continue
 
         for field in t2.fields:
             f1 = obj_is_none(t1, t1.fields, field, get_propriedade)
             if f1 is None:
-                print(drop_field_comando(t2.fields[field]))
+                comando = drop_field_comando(t2.fields[field])
+                retorno += comando
+                print(comando)
 
         for index in t2.indexes:
             i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
             if i1 is None:
-                print(drop_index_comando(t2.indexes[index]))
+                comando = drop_index_comando(t2.indexes[index])
+                retorno += comando
+                print(comando)
+    return retorno
 
 
-def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs):
-
-
+def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs) -> str:
     dump1 = ler_df(fileNameDump1)
     dump2 = ler_df(fileNameDump2)
 
-    compara_dump1_x_dump2(dump1, dump2)
-    compara_dump2_x_dump1(dump1, dump2)
-
-    print('argumentos',kwargs)
+    retorno = compara_dump1_x_dump2(dump1, dump2)
+    retorno += compara_dump2_x_dump1(dump1, dump2)
+    #print('argumentos',kwargs)
+    return retorno
 
 
 if __name__ == '__main__':

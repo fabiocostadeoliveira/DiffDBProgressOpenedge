@@ -1,0 +1,10 @@
+ADD TABLE "aac014"
+  DESCRIPTION "Historico das alteracoes do Limite de Credito"
+  DUMP-NAME "aac014"
+
+ADD INDEX "aac014-1" ON "aac014"
+  UNIQUE
+  PRIMARY
+  INDEX-FIELD "empresa" ASCENDING
+  INDEX-FIELD "sequencia" ASCENDING
+  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING

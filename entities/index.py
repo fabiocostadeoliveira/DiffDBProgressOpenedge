@@ -1,5 +1,6 @@
 from core.sintaxe import sintaxe
 
+
 class Index:
     nameTable: str
     name: str
