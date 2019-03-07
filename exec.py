@@ -1,6 +1,21 @@
 from core.sintaxe import sintaxe
 from util.field_util import rename_field
 from core.load_dump_file import ler_df
+import sys, getopt, os
+
+QUEBRA_DE_LINHA = "" + os.linesep + ""
+ESPACO = "" + chr(32) * 5 + ""
+
+TEXTO_HELP = '-a, --dump1=<nome_da_df1> - ' \
+             + QUEBRA_DE_LINHA + ESPACO + '* Passar o nome da primeira df, geralmente a df mais atual' + QUEBRA_DE_LINHA + \
+             '-b, --dump2=<nome_da_df2> ' \
+             + QUEBRA_DE_LINHA + ESPACO + '* Passar o nome da segunda df, geralmente df desatualizada' + QUEBRA_DE_LINHA + \
+             '-c, --dfsaida=<nome_da_dfsaida>' \
+             + QUEBRA_DE_LINHA + ESPACO + '* [opcional] Passar nome da df de saida, caso nao seja passado o resultado sera mostrado na tela.' + QUEBRA_DE_LINHA + \
+             '-h   * help' + QUEBRA_DE_LINHA + \
+             '-v   * versao'
+
+VERSAO = '1.0.0'
 
 
 def compareTable(table1, table2)->str:
@@ -210,8 +225,35 @@ def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs) -> str:
     #print('argumentos',kwargs)
     return retorno
 
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv, "hva:b:c:", ["dump1=","dump2=","dfsaida="])
+    except getopt.GetoptError:
+        print ('exec.py --dump1=nome_dump1 --dump2=nome_dump2')
+        sys.exit(2)
+    opcoes = dict()
+    for opt, arg in opts:
+        if opt == '-h':
+            print(TEXTO_HELP)
+            sys.exit()
+        elif opt == '-v':
+            print('versao:', VERSAO)
+            sys.exit()
+        elif opt in ("-a", "--dump1"):
+            opcoes['dump1'] = arg
+        elif opt in ("-b", "--dump2"):
+            opcoes['dump2'] = arg
+
+    if opcoes.get('dump1',None) == None or opcoes.get('dump2',None) == None:
+        print ( QUEBRA_DE_LINHA + "Parametros Invalidos!!!")
+        print ("Devem ser informados pelo menos os parametros --dump1 e --dump2")
+        exit(1)
+    return opcoes
+
 
 if __name__ == '__main__':
-    opcoes = {'fileoutput':'./dump_inc.df','ignoredrops':True}
-    executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
+    opcoes = main(sys.argv[1:])
+    ##executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
+    executa_diferenca(opcoes.get('dump1'),opcoes.get('dump2') , **opcoes)
+
 
