@@ -147,10 +147,10 @@ def compara_dump1_x_dump2(dump1,dump2) -> str:
         t2 = dump2.tables.get(table, None)
 
         comando = compareTable(t1, t2)
-        print(comando)
+        ##print(comando)
         if comando is not '':
             retorno += comando
-            print(retorno)
+            ##print(retorno)
 
         for field in t1.fields:
             f1 = t1.fields.get(field, None)
@@ -161,7 +161,7 @@ def compara_dump1_x_dump2(dump1,dump2) -> str:
             comando = compareField(f1, f2)
             if comando is not '':
                 retorno += comando
-                print(comando)
+                ##print(comando)
 
         for index in t1.indexes:
             i1 = t1.indexes.get(index, None)
@@ -172,7 +172,7 @@ def compara_dump1_x_dump2(dump1,dump2) -> str:
             comando = compare_index(i1, i2)
             if comando is not '':
                 retorno += comando
-                print(comando)
+                ##print(comando)
     return retorno
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
@@ -185,7 +185,7 @@ def compara_dump2_x_dump1(dump1,dump2):
         if t1 is None:
             comando = drop_table_comando(t2)
             retorno += comando
-            print(comando)
+            ##print(comando)
             continue
 
         for field in t2.fields:
@@ -193,14 +193,14 @@ def compara_dump2_x_dump1(dump1,dump2):
             if f1 is None:
                 comando = drop_field_comando(t2.fields[field])
                 retorno += comando
-                print(comando)
+                ##print(comando)
 
         for index in t2.indexes:
             i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
             if i1 is None:
                 comando = drop_index_comando(t2.indexes[index])
                 retorno += comando
-                print(comando)
+                ##print(comando)
     return retorno
 
 
@@ -232,6 +232,8 @@ def main(argv):
             opcoes['dump1'] = arg
         elif opt in ("-b", "--dump2"):
             opcoes['dump2'] = arg
+        elif opt in ("-c", "--dfsaida"):
+            opcoes['dfsaida'] = arg
         elif opt in ("-d", "--drops"):
             opcoes['drops'] = False
 
@@ -245,5 +247,17 @@ def main(argv):
 if __name__ == '__main__':
     opcoes = main(sys.argv[1:])
     ##executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
-    executa_diferenca(opcoes.get('dump1'),opcoes.get('dump2') , **opcoes)
+    retorno = executa_diferenca(opcoes.get('dump1'), opcoes.get('dump2'), **opcoes)
+    nomeArquivoSaida = opcoes.get('dfsaida', None)
+    if nomeArquivoSaida == None:
+        print(retorno)
+        exit(0)
+    else:
+        try:
+            arquivoSaida = open(nomeArquivoSaida,'w')
+            arquivoSaida.write(retorno)
+            arquivoSaida.close()
+        except FileNotFoundError:
+            print('Erro ao criar arquivo de saida!!!')
+            exit(1)
 
