@@ -26,7 +26,7 @@ def compareTable(table1, table2)->str:
         dif = True
         comando += "  DUMP-NAME \"" + table1.dump_name + "\" \n"
     if dif:
-        return comando.format(tableName=table1.name)
+        return comando.format(tableName=table1.name) + '\n'
 
     return ''
 
@@ -69,7 +69,7 @@ def compareField(field1, field2)->str:
         dif = True
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER",prop_value=field1.order)
     if dif:
-        return comando.format(fieldName=field1.name,tableName=field1.nameTable)
+        return comando.format(fieldName=field1.name,tableName=field1.nameTable) + '\n'
 
     return ''
 
@@ -94,7 +94,7 @@ def compare_index(index1, index2) -> str:
             newName=index2.name + "_old"
         ) + "\n"
 
-        comando += index1.__str__() + "\n"
+        comando += index1.__str__()
         comando += sintaxe.DROP_INDEX.format(indexName=index2.name + "_old", tableName=index2.nameTable)
 
     return comando

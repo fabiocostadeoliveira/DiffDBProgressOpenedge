@@ -126,7 +126,7 @@ class ModeloIndex(ModeloComando):
                 matchesIndex = re.finditer(RegexUtil.REGEX_INDEX_FIELD, match.groupdict()['INDEXFIELD'],re.MULTILINE | re.IGNORECASE)
                 for matchNum1, matchIndex in enumerate(matchesIndex):
                     indexF = IndexField()
-                    indexF.fieldName = compileString.findall(matchIndex.group('INDEXFIELD'))[0]
+                    indexF.fieldName = compileString.findall(matchIndex.group('INDEXFIELD'))[0].lower()
                     indexF.order = matchIndex.group('ORDENACAO')
                     indexF.abbreviated = matchIndex.group('ABBREVIATED')
                     indexF.nameIndex = index.name

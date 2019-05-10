@@ -15,13 +15,13 @@ class TesteGeral(unittest.TestCase):
     def test_tabela_update(self):
         df1 = "testes/arq/dfTable1_d3.df"
         df2 = "testes/arq/dfTable1_d1.df"
-        strcompara = "UPDATE TABLE \"aac014\" \n  AREA \"area1\" \n  DESCRIPTION \"Historico das alteracoes\" \n"
+        strcompara = "UPDATE TABLE \"aac014\" \n  AREA \"area1\" \n  DESCRIPTION \"Historico das alteracoes\" \n\n"
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_tabela_drop(self):
         df1 = "testes/arq/dfTable1_d2.df"
         df2 = "testes/arq/dfTable1_d1.df"
-        strcompara = "DROP TABLE \"aac014\"\n"
+        strcompara = "DROP TABLE \"aac014\"\n\n"
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_field_add(self):
@@ -34,7 +34,7 @@ class TesteGeral(unittest.TestCase):
                       '  POSITION "2"\n' +
                       '  COLUMN-LABEL "Empresa"\n' +
                       '  HELP "Codigo da empresa"\n'
-                      '  ORDER "10"\n'
+                      '  ORDER "10"\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -44,14 +44,14 @@ class TesteGeral(unittest.TestCase):
         strcompara = ('UPDATE FIELD "empresa" of "aac014" \n' +
                       '  INITIAL "0"\n' +
                       '  POSITION 2\n' +
-                      '  HELP "Codigo da empresa"\n'
+                      '  HELP "Codigo da empresa"\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_field_drop(self):
         df1 = "testes/arq/dfField1_d2.df"
         df2 = "testes/arq/dfField1_d1.df"
-        strcompara = 'DROP FIELD "empresa" ON "aac014"\n'
+        strcompara = 'DROP FIELD "empresa" ON "aac014"\n\n'
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_field_rename(self):
@@ -66,7 +66,7 @@ class TesteGeral(unittest.TestCase):
                       '  POSITION "2"\n' +
                       '  COLUMN-LABEL "Empresa"\n' +
                       '  HELP "Codigo da empresa"\n' +
-                      '  ORDER "10"\n'
+                      '  ORDER "10"\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -78,14 +78,14 @@ class TesteGeral(unittest.TestCase):
                       '  PRIMARY\n' +
                       '  INDEX-FIELD "empresa" ASCENDING\n' +
                       '  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING\n' +
-                      '  INDEX-FIELD "sequencia" ASCENDING\n'
+                      '  INDEX-FIELD "sequencia" ASCENDING\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_index_drop(self):
         df1 = "testes/arq/dfField1_d2.df"
         df2 = "testes/arq/dfIndex1_d1.df"
-        strcompara = 'DROP INDEX "aac014-1" ON "aac014"\n'
+        strcompara = 'DROP INDEX "aac014-1" ON "aac014"\n\n'
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_index_faltandoUmCampo(self):
@@ -100,7 +100,7 @@ class TesteGeral(unittest.TestCase):
                       '  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING\n' +
                       '  INDEX-FIELD "sequencia" ASCENDING\n' +
                       '\n' +
-                      'DROP INDEX "aac014-1_old" ON "aac014"\n'
+                      'DROP INDEX "aac014-1_old" ON "aac014"\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -115,7 +115,7 @@ class TesteGeral(unittest.TestCase):
                       '  INDEX-FIELD "empresa" ASCENDING\n' +
                       '  INDEX-FIELD "sequencia" ASCENDING\n' +
                       '\n' +
-                      'DROP INDEX "aac014-1_old" ON "aac014"\n'
+                      'DROP INDEX "aac014-1_old" ON "aac014"\n\n'
                       )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -131,6 +131,11 @@ class TesteGeral(unittest.TestCase):
                       '  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING\n' +
                       '  INDEX-FIELD "sequencia" ASCENDING\n' +
                       '\n' +
-                      'DROP INDEX "aac014-1_old" ON "aac014"\n'
+                      'DROP INDEX "aac014-1_old" ON "aac014"\n\n'
                       )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
+    def test_index_caseSensitive(self):
+        df1 = "testes/arq/dfIndex1_d4.df"
+        df2 = "testes/arq/dfIndex1_d1.df"
+        self.assertEqual('', executa_diferenca(df1, df2))
