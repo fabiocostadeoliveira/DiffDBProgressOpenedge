@@ -17,6 +17,7 @@ class Field:
     order: str
     decimals: str
     description: str
+    extent: str
 
     def __init__(self):
         self.name = ""
@@ -33,6 +34,7 @@ class Field:
         self.decimals = ""
         self.nameTable = ""
         self.description = ""
+        self.extent = ""
 
     def __str__(self):
         properties = ""
@@ -50,7 +52,7 @@ class Field:
             properties += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=self.label)
         if self.position != "":
             dif = True
-            properties += sintaxe.PROP_QUOTE.format(prop_name="POSITION", prop_value=self.position)
+            properties += sintaxe.PROP_NOT_QUOTE.format(prop_name="POSITION", prop_value=self.position)
         if self.columnLabel != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="COLUMN-LABEL", prop_value=self.columnLabel)
@@ -59,10 +61,13 @@ class Field:
             properties += sintaxe.PROP_QUOTE.format(prop_name="HELP", prop_value=self.help)
         if self.decimals != "":
             dif = True
-            properties += sintaxe.PROP_QUOTE.format(prop_name="DECIMALS", prop_value=self.decimals)
+            properties += sintaxe.PROP_NOT_QUOTE.format(prop_name="DECIMALS", prop_value=self.decimals)
+        if self.extent != "":
+            dif = True
+            properties += sintaxe.PROP_NOT_QUOTE.format(prop_name="EXTENT", prop_value=self.extent)
         if self.order != "":
             dif = True
-            properties += sintaxe.PROP_QUOTE.format(prop_name="ORDER", prop_value=self.order)
+            properties += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER", prop_value=self.order)
 
         if dif:
             return sintaxe.ADD_FIELD_ALL.format(

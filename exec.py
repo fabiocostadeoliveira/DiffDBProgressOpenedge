@@ -13,9 +13,9 @@ def compareTable(table1, table2)->str:
 
     if(table2 == None):
         return str(table1)
-    if (table1.area != table2.area):
-        dif = True
-        comando += "  AREA \"" + table1.area + "\" \n"
+    #if (table1.area != table2.area):
+    #    dif = True
+    #    comando += "  AREA \"" + table1.area + "\" \n"
     if (table1.label != table2.label):
         dif = True
         comando += "  LABEL \"" + table1.label + "\" \n"
@@ -38,34 +38,34 @@ def compareField(field1, field2)->str:
     if field2 is None:
         return str(field1)
 
-    if not(field1.typeField.__eq__(field2.typeField)):
+    if not(field1.typeField.__eq__(field2.typeField)) or field1.extent != field2.extent:
         return rename_field(field1, field2)
 
     if field1.description != field2.description:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=field1.description)
-    if (field1.formatt != field2.formatt):
+    if field1.formatt != field2.formatt:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="FORMAT", prop_value=field1.formatt)
-    if (field1.initial != field2.initial):
+    if field1.initial != field2.initial:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="INITIAL", prop_value=field1.initial)
-    if (field1.label != field2.label):
+    if field1.label != field2.label:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=field1.label)
-    if (field1.position != field2.position):
+    if field1.position != field2.position:
         dif = True
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="POSITION", prop_value=field1.position)
-    if (field1.columnLabel != field2.columnLabel):
+    if field1.columnLabel != field2.columnLabel:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="COLUMN-LABEL", prop_value=field1.columnLabel)
-    if (field1.help != field2.help):
+    if field1.help != field2.help:
         dif = True
         comando += sintaxe.PROP_QUOTE.format(prop_name="HELP", prop_value=field1.help)
-    if (field1.decimals != field2.decimals):
+    if field1.decimals != field2.decimals:
         dif = True
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="DECIMALS", prop_value=field1.decimals)
-    if (field1.order != field2.order):
+    if field1.order != field2.order:
         dif = True
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER",prop_value=field1.order)
     if dif:
@@ -82,7 +82,8 @@ def compare_index(index1, index2) -> str:
     if index2 is None:
         return str(index1)
 
-    dif = index1.area != index2.area or index2.unique != index1.unique or index2.primary != index1.primary
+    #index1.area != index2.area or
+    dif = index2.unique != index1.unique or index2.primary != index1.primary
 
     if not dif:
         dif = dif_seq(index1, index2)
@@ -106,7 +107,7 @@ def dif_seq(i1, i2) -> bool:
     dif = len(i1.indexField) != len(i2.indexField)
     if not dif:
         for indf in i1.indexField:
-            if2 = i2.indexField[indf]
+            if2 = i2.indexField.get(indf, None)
             if if2 is None:
                 dif = True
                 break

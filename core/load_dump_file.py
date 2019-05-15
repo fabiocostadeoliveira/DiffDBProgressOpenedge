@@ -87,6 +87,9 @@ class ModeloField(ModeloComando):
             elif match.lastgroup == 'ORDER':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.order = compile.findall(match.groupdict()['ORDER'])[0]
+            elif match.lastgroup == 'EXTENT':
+                compile = re.compile(RegexUtil.REGEX_PROP_INT)
+                field.extent = compile.findall(match.groupdict()['EXTENT'])[0]
             elif match.lastgroup == 'ADDFIELD':
                 matchesField = re.finditer(RegexUtil.REGEX_ADD_FIELD, match.groupdict()['ADDFIELD'], re.MULTILINE | re.IGNORECASE)
                 for matchNum1, matchField in enumerate(matchesField):
@@ -199,6 +202,9 @@ def ler_df(arquivo):
     comando = None
 
     dump = Dict()
+    if len(texto.split("ADD")) <= 1:
+        return dump
+
     for cmd in texto.split("ADD"):
         if(len(cmd.replace("\n", "").strip()) > 0):
             comando = "ADD" + cmd

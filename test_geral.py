@@ -15,7 +15,7 @@ class TesteGeral(unittest.TestCase):
     def test_tabela_update(self):
         df1 = "testes/arq/dfTable1_d3.df"
         df2 = "testes/arq/dfTable1_d1.df"
-        strcompara = "UPDATE TABLE \"aac014\" \n  AREA \"area1\" \n  DESCRIPTION \"Historico das alteracoes\" \n\n"
+        strcompara = "UPDATE TABLE \"aac014\" \n  DESCRIPTION \"Historico das alteracoes\" \n\n"
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_tabela_drop(self):
@@ -31,10 +31,10 @@ class TesteGeral(unittest.TestCase):
                       '  FORMAT "99"\n' +
                       '  INITIAL "0"\n' +
                       '  LABEL "Empresa........."\n' +
-                      '  POSITION "2"\n' +
+                      '  POSITION 2\n' +
                       '  COLUMN-LABEL "Empresa"\n' +
                       '  HELP "Codigo da empresa"\n'
-                      '  ORDER "10"\n\n'
+                      '  ORDER 10\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -63,10 +63,10 @@ class TesteGeral(unittest.TestCase):
                       '  FORMAT "99"\n' +
                       '  INITIAL "0"\n' +
                       '  LABEL "Empresa........."\n' +
-                      '  POSITION "2"\n' +
+                      '  POSITION 2\n' +
                       '  COLUMN-LABEL "Empresa"\n' +
                       '  HELP "Codigo da empresa"\n' +
-                      '  ORDER "10"\n\n'
+                      '  ORDER 10\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -139,3 +139,20 @@ class TesteGeral(unittest.TestCase):
         df1 = "testes/arq/dfIndex1_d4.df"
         df2 = "testes/arq/dfIndex1_d1.df"
         self.assertEqual('', executa_diferenca(df1, df2))
+
+    def test_alterarExtent(self):
+        df1 = "testes/arq/dfField1_d5.df"
+        df2 = "testes/arq/dfField1_d1.df"
+        f = open(df1, 'r', encoding="utf-8", errors='ignore')
+        strcompara = 'RENAME FIELD "empresa" OF "aac014" TO "empresa_old"\n\n'\
+            + '''ADD FIELD "empresa" OF "aac014" AS integer
+  FORMAT "99"
+  INITIAL "0"
+  LABEL "Empresa........."
+  POSITION 2
+  COLUMN-LABEL "Empresa"
+  HELP "Codigo da empresa"
+  EXTENT 10
+  ORDER 10\n\n'''
+        f.close()
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))

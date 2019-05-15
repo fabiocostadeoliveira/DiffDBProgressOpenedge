@@ -1,0 +1,13 @@
+ADD TABLE "aac014"
+  DESCRIPTION "Historico das alteracoes do Limite de Credito"
+  DUMP-NAME "aac014"
+
+ADD FIELD "empresa" OF "aac014" AS integer
+  FORMAT "99"
+  INITIAL "0"
+  LABEL "Empresa........."
+  POSITION 2
+  COLUMN-LABEL "Empresa"
+  HELP "Codigo da empresa"
+  EXTENT 10
+  ORDER 10
