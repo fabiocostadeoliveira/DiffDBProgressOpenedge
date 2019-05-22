@@ -140,6 +140,23 @@ class TesteGeral(unittest.TestCase):
         df2 = "testes/arq/dfIndex1_d1.df"
         self.assertEqual('', executa_diferenca(df1, df2))
 
+    def test_index_sem_schema_area(self):
+        df1 = "testes/arq/dfIndex1_d3.df"
+        df2 = "testes/arq/dfIndex1_d4.df"
+        strcompara = ('RENAME INDEX "aac014-1" ON "aac014" TO "aac014-1_old"\n' +
+                      '\n' +
+                      'ADD INDEX "aac014-1" ON "aac014"\n' +
+                      '  UNIQUE\n' +
+                      '  PRIMARY\n' +
+                      '  INDEX-FIELD "empresa" ASCENDING\n' +
+                      '  INDEX-FIELD "sequencia" ASCENDING\n' +
+                      '  INDEX-FIELD "cgc-cpf-parceiro" ASCENDING\n' +
+                      '\n' +
+                      'DROP INDEX "aac014-1_old" ON "aac014"\n\n'
+        )
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
+
     def test_alterarExtent(self):
         df1 = "testes/arq/dfField1_d5.df"
         df2 = "testes/arq/dfField1_d1.df"

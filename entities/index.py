@@ -19,8 +19,9 @@ class Index:
 
     def __str__(self):
         properties = ""
-        if self.area != "":
-            properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=self.area)
+        # Comentador abaixo pois o schema area quase sempre eh diferente com a base do cliente
+        # if self.area != "":
+        #     properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=self.area)
         if self.unique:
             properties += sintaxe.PROP_NONE.format(prop_name="UNIQUE")
         if self.primary:

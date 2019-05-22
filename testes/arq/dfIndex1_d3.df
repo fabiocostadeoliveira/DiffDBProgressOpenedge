@@ -3,6 +3,7 @@ ADD TABLE "aac014"
   DUMP-NAME "aac014"
 
 ADD INDEX "aac014-1" ON "aac014"
+  AREA "Schema Area"
   UNIQUE
   PRIMARY
   INDEX-FIELD "empresa" ASCENDING
