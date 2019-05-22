@@ -156,6 +156,12 @@ class TesteGeral(unittest.TestCase):
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
+    def test_field_case_insensitive(self):
+        df1 = "testes/arq/dfField1_d5.df"
+        df2 = "testes/arq/dfField1_d6.df"
+        strcompara = ''
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
 
     def test_alterarExtent(self):
         df1 = "testes/arq/dfField1_d5.df"

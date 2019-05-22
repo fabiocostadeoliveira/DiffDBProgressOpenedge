@@ -97,7 +97,7 @@ class ModeloField(ModeloComando):
                     compileSemAspas = re.compile(RegexUtil.REGEX_PROP_SEM_ASPAS)
                     field.nameTable = compileString.findall(matchField.group('TABELA'))[0]
                     field.typeField = compileSemAspas.findall(matchField.group('TIPO'))[0]
-                    field.name = compileString.findall(matchField.group('CAMPO'))[0]
+                    field.name = compileString.findall(matchField.group('CAMPO'))[0].lower()
 
         return field
 
