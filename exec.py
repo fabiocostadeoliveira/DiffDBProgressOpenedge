@@ -5,13 +5,11 @@ from core import constants as constant
 import sys, getopt, os
 
 
-
-
-def compareTable(table1, table2)->str:
+def compareTable(table1, table2) -> str:
     dif: bool = False
     comando = sintaxe.UPDATE_TABLE + '\n'
 
-    if(table2 == None):
+    if table2 is None:
         return str(table1)
     #if (table1.area != table2.area):
     #    dif = True
@@ -22,9 +20,9 @@ def compareTable(table1, table2)->str:
     if(table1.description != table2.description):
         dif = True
         comando += "  DESCRIPTION \"" + table1.description + "\" \n"
-    if (table1.dump_name != table2.dump_name):
-        dif = True
-        comando += "  DUMP-NAME \"" + table1.dump_name + "\" \n"
+    # if (table1.dump_name != table2.dump_name):
+    #     dif = True
+    #     comando += "  DUMP-NAME \"" + table1.dump_name + "\" \n"
     if dif:
         return comando.format(tableName=table1.name) + '\n'
 
@@ -69,7 +67,7 @@ def compareField(field1, field2)->str:
         dif = True
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER",prop_value=field1.order)
     if dif:
-        return comando.format(fieldName=field1.name,tableName=field1.nameTable) + '\n'
+        return comando.format(fieldName=field1.name, tableName=field1.nameTable) + '\n'
 
     return ''
 
@@ -78,11 +76,9 @@ def compare_index(index1, index2) -> str:
     dif: bool = False
 
     comando = ""
-
     if index2 is None:
         return str(index1)
 
-    #index1.area != index2.area or
     dif = index2.unique != index1.unique or index2.primary != index1.primary
 
     if not dif:
@@ -102,8 +98,6 @@ def compare_index(index1, index2) -> str:
 
 
 def dif_seq(i1, i2) -> bool:
-    dif = False
-
     dif = len(i1.indexField) != len(i2.indexField)
     if not dif:
         for indf in i1.indexField:
@@ -140,18 +134,23 @@ def obj_is_none(table, prop, obj, funcao):
         return funcao(prop,obj)
 
 
-def compara_dump1_x_dump2(dump1,dump2) -> str:
-
+def compara_dump1_x_dump2(dump1, dump2) -> str:
     retorno  = ''
     for table in dump1.tables:
+
         t1 = dump1.tables.get(table, None)
         t2 = dump2.tables.get(table, None)
 
+        if t1 is not None and t1.name.startswith('agr'):
+            continue
+
+        if t2 is not None and t2.name.startswith('agr'):
+            continue
+
         comando = compareTable(t1, t2)
-        ##print(comando)
+
         if comando is not '':
             retorno += comando
-            ##print(retorno)
 
         for field in t1.fields:
             f1 = t1.fields.get(field, None)
@@ -173,11 +172,10 @@ def compara_dump1_x_dump2(dump1,dump2) -> str:
             comando = compare_index(i1, i2)
             if comando is not '':
                 retorno += comando
-                ##print(comando)
     return retorno
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
-def compara_dump2_x_dump1(dump1,dump2):
+def compara_dump2_x_dump1(dump1, dump2):
     retorno = ''
     for table in dump2.tables:
         t1 = dump1.tables.get(table, None)
@@ -186,7 +184,6 @@ def compara_dump2_x_dump1(dump1,dump2):
         if t1 is None:
             comando = drop_table_comando(t2)
             retorno += comando
-            ##print(comando)
             continue
 
         for field in t2.fields:
@@ -194,14 +191,12 @@ def compara_dump2_x_dump1(dump1,dump2):
             if f1 is None:
                 comando = drop_field_comando(t2.fields[field])
                 retorno += comando
-                ##print(comando)
 
         for index in t2.indexes:
             i1 = obj_is_none(t1, t1.indexes, index, get_propriedade)
             if i1 is None:
                 comando = drop_index_comando(t2.indexes[index])
                 retorno += comando
-                ##print(comando)
     return retorno
 
 
@@ -210,7 +205,7 @@ def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs) -> str:
     dump2 = ler_df(fileNameDump2)
 
     retorno = compara_dump1_x_dump2(dump1, dump2)
-    if kwargs.get('drops',None) == None:
+    if kwargs.get('drops', None) is None:
         retorno += compara_dump2_x_dump1(dump1, dump2)
 
     return retorno
@@ -219,7 +214,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hvda:b:c:", ["dump1=","dump2=","dfsaida=","drops"])
     except getopt.GetoptError:
-        print ('exec.py --dump1=nome_dump1 --dump2=nome_dump2')
+        print ('exec.py --dump1=nome_dump1 --dump2=nome_dump2 --dfsaida=nome_arquivo_saida')
         sys.exit(2)
     opcoes = dict()
     for opt, arg in opts:
@@ -247,18 +242,18 @@ def main(argv):
 
 if __name__ == '__main__':
     opcoes = main(sys.argv[1:])
-    ##executa_diferenca('./dumps/df1.df','./dumps/df2.df',**opcoes)
     retorno = executa_diferenca(opcoes.get('dump1'), opcoes.get('dump2'), **opcoes)
     nomeArquivoSaida = opcoes.get('dfsaida', None)
-    if nomeArquivoSaida == None:
+    if nomeArquivoSaida is None:
         print(retorno)
         exit(0)
     else:
         try:
-            arquivoSaida = open(nomeArquivoSaida,'w')
+            arquivoSaida = open(nomeArquivoSaida, 'w')
             arquivoSaida.write(retorno)
             arquivoSaida.close()
-        except FileNotFoundError:
+        except FileNotFoundError as e:
+            print(e)
             print('Erro ao criar arquivo de saida!!!')
             exit(1)
 

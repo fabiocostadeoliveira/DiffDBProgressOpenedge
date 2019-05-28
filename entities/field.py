@@ -32,9 +32,18 @@ class Field:
         self.help = ""
         self.order = ""
         self.decimals = ""
-        self.nameTable = ""
+        self._nameTable = ""
         self.description = ""
         self.extent = ""
+
+
+    @property
+    def nameTable(self):
+        return self._nameTable
+
+    @nameTable.setter
+    def nameTable(self, pnameTable):
+        self._nameTable = pnameTable.lower()
 
     def __str__(self):
         properties = ""

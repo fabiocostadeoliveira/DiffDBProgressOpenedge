@@ -41,7 +41,6 @@ class ModeloTable(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
         matches = re.finditer(RegexUtil.REGEX_TABLE, comandoStr, re.MULTILINE | re.IGNORECASE)
-
         table = Table()
 
         for matchNum, match in enumerate(matches):
@@ -62,7 +61,6 @@ class ModeloField(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
         matches = re.finditer(RegexUtil.REGEX_FIELD, comandoStr, re.MULTILINE | re.IGNORECASE)
-
         field = Field()
 
         for matchNum, match in enumerate(matches):
@@ -106,7 +104,6 @@ class ModeloIndex(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
         matches = re.finditer(RegexUtil.REGEX_INDEX, comandoStr, re.MULTILINE | re.IGNORECASE)
-
         index = Index()
 
         i = 0
@@ -137,7 +134,6 @@ class ModeloIndex(ModeloComando):
                     i += 1
                     indexF.seq = i
                     index.indexField[indexF.fieldName] = indexF
-
         return index
 
 
@@ -145,7 +141,6 @@ class ModeloSequece(ModeloComando):
     def converter(self, comandoStr):
         compileDados = re.compile(RegexUtil.REGEX_PROP_STRING)
         matches = re.finditer(RegexUtil.REGEX_SEQUE, comandoStr, re.MULTILINE | re.IGNORECASE)
-
         sequence = Sequence()
 
         for matchNum, match in enumerate(matches):
@@ -199,14 +194,12 @@ def ler_df(arquivo):
     texto = f.read()
     f.close()
 
-    comando = None
-
     dump = Dict()
     if len(texto.split("ADD")) <= 1:
         return dump
 
     for cmd in texto.split("ADD"):
-        if(len(cmd.replace("\n", "").strip()) > 0):
+        if len(cmd.replace("\n", "").strip()) > 0:
             comando = "ADD" + cmd
             modeloComando = getModeloConversao(comando)
             comando = modeloComando.converter(comando)

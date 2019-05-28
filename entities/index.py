@@ -10,12 +10,20 @@ class Index:
     indexField: dict
 
     def __init__(self):
-        self.nameTable = ""
+        self._nameTable = ""
         self.name = ""
         self.area = ""
         self.unique = False
         self.primary = False
         self.indexField = dict()
+
+    @property
+    def nameTable(self):
+        return self._nameTable
+
+    @nameTable.setter
+    def nameTable(self, pnameTable):
+        self._nameTable = pnameTable.lower()
 
     def __str__(self):
         properties = ""
@@ -42,12 +50,20 @@ class IndexField:
     seq: int
 
     def __init__(self):
-        self.nameTable = ""
+        self._nameTable = ""
         self.nameIndex = ""
         self.fieldName = ""
         self.order = ""
         self.abbreviated = False
         self.seq = 0
+
+    @property
+    def nameTable(self):
+        return self._nameTable
+
+    @nameTable.setter
+    def nameTable(self, pnameTable):
+        self._nameTable = pnameTable.lower()
 
     def __eq__(self, other):
         if type(other) is IndexField:

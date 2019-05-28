@@ -13,7 +13,7 @@ class Table:
     indexes: dict
 
     def __init__(self):
-        self.name = str()
+        self._name = str()
         self.area = str()
         self.label = str()
         self.description = str()
@@ -22,18 +22,27 @@ class Table:
         self.fields = dict()
         self.indexes = dict()
 
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, pname):
+        self._name = pname.lower()
+
     def addField(self, field):
         self.fields.update({field.name: field})
 
     def addIndex(self, index):
-        self.indexes.update({index.name: index})
+        self.indexes.update({index.name.lower(): index})
 
     def __str__(self):
         properties = ""
-#        print('area=' + self.area + str(self.area != None) )
-#        if (self.area != ""):
-#            dif = True
-#            properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=self.area)
+        dif = False
+       # print('area=' + self.area + str(self.area != None) )
+       # if (self.area != ""):
+       #     dif = True
+       #     properties += sintaxe.PROP_QUOTE.format(prop_name="AREA", prop_value=self.area)
         if self.label != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="LABEL", prop_value=self.label)
@@ -45,6 +54,7 @@ class Table:
             properties += sintaxe.PROP_QUOTE.format(prop_name="DUMP-NAME", prop_value=self.dump_name)
         if dif:
             return sintaxe.ADD_TABLE_ALL.format(tableName=self.name,properties=properties)
+
 
     def _eq_(self, other):
         if type(other) is Table:
