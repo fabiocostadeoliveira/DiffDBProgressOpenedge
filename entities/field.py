@@ -18,6 +18,7 @@ class Field:
     decimals: str
     description: str
     extent: str
+    #TODO inserir campo MANDATORY
 
     def __init__(self):
         self.name = ""
@@ -47,6 +48,7 @@ class Field:
 
     def __str__(self):
         properties = ""
+        dif = False
         if self.description != "":
             dif = True
             properties += sintaxe.PROP_QUOTE.format(prop_name="DESCRIPTION", prop_value=self.description)
