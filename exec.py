@@ -2,7 +2,42 @@ from core.sintaxe import sintaxe
 from util.field_util import rename_field
 from core.load_dump_file import ler_df
 from core import constants as constant
-import sys, getopt, os
+import sys
+import getopt
+
+
+def compare_triggers(table1, table2) ->str:
+    dif = False
+    command = ""
+    result_trigger_list = list()
+    ## retira triggers que nao contem na table1
+    for trg2 in table2.triggers:
+        trg1 = [tt1 for tt1 in table1.triggers if tt1.event.lower() == trg2.event.lower()]
+        if len(trg1) is 0:
+            action = {'action': 'del', 'trigger': trg2}
+            result_trigger_list.append(action)
+
+    ## add triggers que nao contem na table2
+    for idx, trg1 in enumerate(table1.triggers):
+        trg2 = [tt2 for tt2 in table2.triggers if tt2.event.lower() == trg1.event.lower()]
+        if trg2 is [] or trg2 != trg1:
+            action = {'action': 'add', 'trigger': trg1}
+            result_trigger_list.append(action)
+
+    ##ordena resultado da lista, isso deve ficar assim por causa dos testes unitarios que
+    ##tem ordem de comparacao
+    result_trigger_list.sort(key=lambda l: l['trigger'].event)
+    for item in result_trigger_list:
+        trg = item['trigger']
+        action = item['action']
+        if action == 'add':
+            command += str(trg)
+        elif action == 'del':
+            command += trg.del_trigger_sintaxe()
+        else:
+            raise ValueError('Acao nao tratada')
+
+    return command
 
 
 def compareTable(table1, table2) -> str:
@@ -11,18 +46,22 @@ def compareTable(table1, table2) -> str:
 
     if table2 is None:
         return str(table1)
+
     #if (table1.area != table2.area):
     #    dif = True
     #    comando += "  AREA \"" + table1.area + "\" \n"
-    if (table1.label != table2.label):
+    if table1.label != table2.label:
         dif = True
         comando += "  LABEL \"" + table1.label + "\" \n"
-    if(table1.description != table2.description):
+    if table1.description != table2.description:
         dif = True
         comando += "  DESCRIPTION \"" + table1.description + "\" \n"
     # if (table1.dump_name != table2.dump_name):
     #     dif = True
     #     comando += "  DUMP-NAME \"" + table1.dump_name + "\" \n"
+    if table1.trigger_to_string() != table2.trigger_to_string():
+        dif = True
+        comando += compare_triggers(table1, table2)
     if dif:
         return comando.format(tableName=table1.name) + '\n'
 
@@ -65,7 +104,13 @@ def compareField(field1, field2)->str:
         comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="DECIMALS", prop_value=field1.decimals)
     if field1.order != field2.order:
         dif = True
-        comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER",prop_value=field1.order)
+        comando += sintaxe.PROP_NOT_QUOTE.format(prop_name="ORDER", prop_value=field1.order)
+    if field1.mandatory != field2.mandatory:
+        if field2.mandatory is True:
+            comando += sintaxe.PROP_FLAG.format(prop_flag="NULL-ALLOWED")
+        else:
+            comando += sintaxe.PROP_FLAG.format(prop_flag="MANDATORY")
+
     if dif:
         return comando.format(fieldName=field1.name, tableName=field1.nameTable) + '\n'
 
@@ -161,7 +206,6 @@ def compara_dump1_x_dump2(dump1, dump2) -> str:
             comando = compareField(f1, f2)
             if comando is not '':
                 retorno += comando
-                ##print(comando)
 
         for index in t1.indexes:
             i1 = t1.indexes.get(index, None)
@@ -173,6 +217,7 @@ def compara_dump1_x_dump2(dump1, dump2) -> str:
             if comando is not '':
                 retorno += comando
     return retorno
+
 
 # DROP TABLES, FIELS E INDEX QUE EXISTEM NA DUMP2 E NAO NA DUMP1
 def compara_dump2_x_dump1(dump1, dump2):
@@ -209,6 +254,7 @@ def executa_diferenca(fileNameDump1,fileNameDump2, **kwargs) -> str:
         retorno += compara_dump2_x_dump1(dump1, dump2)
 
     return retorno
+
 
 def main(argv):
     try:

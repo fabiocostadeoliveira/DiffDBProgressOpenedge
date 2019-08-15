@@ -1,4 +1,5 @@
 ADD TABLE "aac014"
   DESCRIPTION "Historico das alteracoes do Limite de Credito"
   DUMP-NAME "aac014"
-
+  TABLE-TRIGGER "Delete" NO-OVERRIDE PROCEDURE "testede.trg" CRC "1920"
+  TABLE-TRIGGER "Write" OVERRIDE PROCEDURE "testewr.trg" CRC "?"

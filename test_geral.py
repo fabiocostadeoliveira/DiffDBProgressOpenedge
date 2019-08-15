@@ -8,14 +8,28 @@ class TesteGeral(unittest.TestCase):
         df1 = "testes/arq/dfTable1_d1.df"
         df2 = "testes/arq/dfTable1_d2.df"
         f = open(df1, 'r', encoding="utf-8", errors='ignore')
-        strcompara = f.read()
+        strcompara = f.read() + '\n'
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
         f.close()
 
     def test_tabela_update(self):
         df1 = "testes/arq/dfTable1_d3.df"
         df2 = "testes/arq/dfTable1_d1.df"
-        strcompara = "UPDATE TABLE \"aac014\" \n  DESCRIPTION \"Historico das alteracoes\" \n\n"
+        strcompara = ('UPDATE TABLE "aac014" \n'
+                      '  DESCRIPTION "Historico das alteracoes" \n' +
+                      '  TABLE-TRIGGER "Delete" NO-OVERRIDE PROCEDURE "testede.trg" CRC "1920"\n'+
+                      '  TABLE-TRIGGER "Write" DELETE\n\n')
+
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
+    def test_trigger_update(self):
+        df1 = "testes/arq/dfTable1_d1.df"
+        df2 = "testes/arq/dfTable1_d4.df"
+        strcompara = ('UPDATE TABLE "aac014" \n'
+                      '  TABLE-TRIGGER "Delete" NO-OVERRIDE PROCEDURE "testede.trg" CRC "1920"\n' +
+                      '  TABLE-TRIGGER "Replication-Write" DELETE\n'+
+                      '  TABLE-TRIGGER "Write" OVERRIDE PROCEDURE "testewr.trg" CRC "?"\n\n')
+        diff = executa_diferenca(df1, df2)
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
     def test_tabela_drop(self):
@@ -45,6 +59,28 @@ class TesteGeral(unittest.TestCase):
                       '  INITIAL "0"\n' +
                       '  POSITION 2\n' +
                       '  HELP "Codigo da empresa"\n\n'
+        )
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
+    def test_field_update_mandatory(self):
+        df1 = "testes/arq/dfField1_d7.df"
+        df2 = "testes/arq/dfField1_d1.df"
+        strcompara = ('UPDATE FIELD "empresa" of "aac014" \n' +
+                      '  INITIAL "1"\n' +
+                      '  POSITION 4\n' +
+                      '  HELP "Cod empresa"\n'
+                      '  MANDATORY\n\n'
+        )
+        self.assertEqual(strcompara, executa_diferenca(df1, df2))
+
+    def test_field_update_null_allowed(self):
+        df1 = "testes/arq/dfField1_d1.df"
+        df2 = "testes/arq/dfField1_d7.df"
+        strcompara = ('UPDATE FIELD "empresa" of "aac014" \n' +
+                      '  INITIAL "0"\n' +
+                      '  POSITION 2\n' +
+                      '  HELP "Codigo da empresa"\n'
+                      '  NULL-ALLOWED\n\n'
         )
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
 
@@ -161,7 +197,6 @@ class TesteGeral(unittest.TestCase):
         df2 = "testes/arq/dfField1_d6.df"
         strcompara = ''
         self.assertEqual(strcompara, executa_diferenca(df1, df2))
-
 
     def test_alterarExtent(self):
         df1 = "testes/arq/dfField1_d5.df"

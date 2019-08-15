@@ -1,6 +1,7 @@
 import os
-QUEBRA_DE_LINHA = "" + os.linesep + ""
+QUEBRA_DE_LINHA = '\n'
 ESPACO = "" + chr(32) * 5 + ""
+ASPAS_DUPLA = "" + "\""
 
 TEXTO_HELP = '-a, --dump1=<nome_da_df1> - ' \
              + QUEBRA_DE_LINHA + ESPACO + '* Passar o nome da primeira df, geralmente a df mais atual' + QUEBRA_DE_LINHA + \

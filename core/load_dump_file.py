@@ -4,20 +4,24 @@ from entities.table import Table
 from entities.field import Field
 from entities.index import Index, IndexField
 from entities.sequence import Sequence
+from entities.trigger import Trigger
+from util.parser_regex_progress import ParserRegexProgress as Prp
 
 import abc
 import re
 
+
 class Dict:
-    fields:list
-    indexes:list
-    sequences:list
+    fields: list
+    indexes: list
+    sequences: list
 
     def __init__(self):
         self.tables = {}
         self.fields = []
         self.indexes = []
         self.sequences = []
+
 
 class RegexUtil:
     REGEX_TABLE = open('./regex/table_regex.txt', encoding='utf-8', mode='r').read()
@@ -30,6 +34,8 @@ class RegexUtil:
     REGEX_ADD_FIELD = r"(?P<ADDFIELD>add\s*field\s*)(?P<CAMPO>\".*?\")(?P<TABELA>\sOF\s*\".*\")(?P<TIPO>\s*AS\s*.*)"
     REGEX_ADD_INDEX = r"(?P<ADDINDEX>add\s*index\s*)(?P<INDICE>\".*?\")(?P<TABELA>\sON\s*\".*\")"
     REGEX_INDEX_FIELD = r"(?P<INDEXFIELD>index-field\s*\".*\"\s*(?P<ORDENACAO>ASCENDING|DESCENDING)\s*(?P<ABBREVIATED>ABBREVIATED|))"
+    REGEX_TRIGGER = r"(?P<EVENT>TABLE-TRIGGER\s*\".*?\")\s*|(?P<OVERRIDE>OVERRIDE|NO-OVERRIDE)|(?P<PROCEDURE>PROCEDURE\s*\".*?\")|(?P<CRC>CRC\s*\".*?\")"
+
 
 class ModeloComando(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -54,6 +60,17 @@ class ModeloTable(ModeloComando):
                 table.label = compileDados.findall(match.groupdict()['LABEL'])[0]
             elif match.lastgroup == 'ADDTABLE':
                 table.name = compileDados.findall(match.groupdict()['ADDTABLE'])[0]
+            elif match.lastgroup == 'TABLETRIGGER':
+                t = match.groupdict()['TABLETRIGGER']
+                res_trigger_regex = re.finditer(RegexUtil.REGEX_TRIGGER, t, re.MULTILINE | re.IGNORECASE)
+                parse_triggers = Prp(res_trigger_regex)
+                trigger = Trigger()
+                trigger.table_name = table.dump_name
+                trigger.event = parse_triggers.first_value_string('EVENT')
+                trigger.override = parse_triggers.group_value('OVERRIDE', default='OVERRIDE')
+                trigger.procedure = parse_triggers.first_value_string('PROCEDURE')
+                trigger.crc = parse_triggers.first_value_string('CRC')
+                table.addTrigger(trigger)
         return table
 
 
@@ -88,6 +105,9 @@ class ModeloField(ModeloComando):
             elif match.lastgroup == 'EXTENT':
                 compile = re.compile(RegexUtil.REGEX_PROP_INT)
                 field.extent = compile.findall(match.groupdict()['EXTENT'])[0]
+            elif match.lastgroup == 'MANDATORY':
+                field.mandatory = True
+
             elif match.lastgroup == 'ADDFIELD':
                 matchesField = re.finditer(RegexUtil.REGEX_ADD_FIELD, match.groupdict()['ADDFIELD'], re.MULTILINE | re.IGNORECASE)
                 for matchNum1, matchField in enumerate(matchesField):
@@ -166,28 +186,35 @@ class ModeloSequece(ModeloComando):
 
 
 def isTable(comando):
-    return (comando.strip()[:9] == "ADD TABLE")
+    return comando.strip()[:9] == "ADD TABLE"
+
+
 def isField(comando):
-    return (comando.strip()[:9] == "ADD FIELD")
+    return comando.strip()[:9] == "ADD FIELD"
+
+
 def isIndex(comando):
-    return (comando.strip()[:9] == "ADD INDEX")
+    return comando.strip()[:9] == "ADD INDEX"
+
+
 def isSequence(comando):
-    return (comando.strip()[:12] == "ADD SEQUENCE")
+    return comando.strip()[:12] == "ADD SEQUENCE"
 
 
 def getModeloConversao(comando):
-    if (isTable(comando)):
+    if isTable(comando):
         return ModeloTable()
-    elif (isField(comando)):
+    elif isField(comando):
         return ModeloField()
-    elif (isIndex(comando)):
+    elif isIndex(comando):
         return ModeloIndex()
-    elif (isSequence(comando)):
+    elif isSequence(comando):
         return  ModeloSequece()
 
 '''
 Inicio Execução
 '''
+
 
 def ler_df(arquivo):
     f = open(arquivo, 'r', encoding="utf-8", errors='ignore')

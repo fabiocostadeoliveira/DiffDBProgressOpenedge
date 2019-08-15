@@ -18,7 +18,8 @@ class Field:
     decimals: str
     description: str
     extent: str
-    #TODO inserir campo MANDATORY
+    mandatory: bool
+
 
     def __init__(self):
         self.name = ""
@@ -36,6 +37,7 @@ class Field:
         self._nameTable = ""
         self.description = ""
         self.extent = ""
+        self.mandatory = False
 
 
     @property
